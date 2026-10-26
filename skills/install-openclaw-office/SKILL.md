@@ -1,6 +1,6 @@
 ---
 name: install-openclaw-office
-description: Install, configure, verify, or troubleshoot the OpenClaw Office bridge plugin and its AWTRIX TC002 script, including fresh device pairing and migration from an existing bridge.
+description: Install, configure, verify, or troubleshoot the OpenClaw Office bridge plugin and its AWTRIX TC002 script, including private configuration, device pairing and authentication recovery.
 ---
 
 # Install OpenClaw Office
@@ -15,7 +15,7 @@ An install request authorizes preparing this plugin and its private configuratio
 
 ## Select the correct path
 
-For an existing bridge, preserve its configuration and entire identity directory. Reuse the absolute configuration path. Record how it was managed and its enabled state; stop only the identified old bridge immediately before enabling the plugin. Retain rollback until verified.
+If configuration or device state already exists, inspect and preserve it rather than overwriting it. Do not assume a previous standalone service exists. Diagnose port conflicts before stopping any process.
 
 For a fresh installation, follow the guide's private-config and device-pairing steps. Create directories with mode 700 and secret/config files with mode 600, without overwriting existing files. Ask only for missing non-secret addresses and preferences. If the user authorized reading an existing local Gateway credential, transfer it programmatically into a protected bootstrap file without printing it. Otherwise have the user enter it privately; never request a token in chat or place it in command arguments, repository files or shared logs. Use the diagnostic with `operator.read`; approve only the newly created device request when authorized, and stop if approval requests broader scopes. Remove bootstrap configuration only after paired-device authentication succeeds.
 
@@ -40,4 +40,4 @@ Use finite request timeouts, visible error output and at most three diagnostic r
 
 After bridge verification, install or update the single-file `OpenClawOfficeLive.ax` through the user's available AWTRIX controls. Preserve an existing script's settings and the display power state. Set only its reachable `bridge_url` and requested visual parameters. Verify native script errors and roster when supported. Distinguish a verified bridge from untested clock behavior or unobserved working-to-idle transitions.
 
-Only after successful migration disable the identified old bridge's automatic startup. On failure disable the new plugin before restoring the previous bridge owner. Report checks actually run, remaining limitations, and rollback state without including credentials or private identifiers.
+On failure report the exact stage and leave unrelated services unchanged. For `token_missing`, follow the guide's recovery procedure and verify paired-device authentication before removing the bootstrap credential. Report checks actually run and remaining limitations without including credentials or private identifiers.

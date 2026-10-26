@@ -6,7 +6,7 @@ This repository is a native OpenClaw plugin. It manages the companion bridge pro
 
 ## Install and configure
 
-Follow the [complete installation guide](docs/INSTALL.md). It separates first-time pairing, reuse of an existing bridge, plugin activation, correct-interface health checks, AWTRIX configuration, troubleshooting and rollback. No steps depend on a previous chat or a pre-existing private configuration.
+Follow the [complete installation guide](docs/INSTALL.md). It covers a fresh installation: private configuration, device pairing, plugin activation, correct-interface health checks, AWTRIX configuration and authentication recovery. No steps depend on a previous chat or a pre-existing private configuration.
 
 ```sh
 openclaw plugins install git:github.com/eliseo-juan/openclaw-office-awtrix
@@ -35,7 +35,7 @@ Node.js must meet your installed OpenClaw requirements. Minimum declared host ve
 
 Tests cover authentication storage, projection, bounded display pages, configuration, child lifecycle, actual offline HTTP endpoints and port cleanup. The plugin was observed loading on OpenClaw 2026.9.2 and serving HTTP on its configured LAN interface. Successful paired Gateway connectivity under the plugin and a real working-to-idle transition on the clock remain unverified. The plugin reports unexpected child exit; automatic crash restart is not implemented.
 
-To roll back, disable this plugin before restarting your previous standalone bridge. Reuse the same private configuration and state.
+To stop the bridge, disable this plugin and restart the Gateway. Keep private pairing files if you intend to reinstall.
 
 ## Licence
 

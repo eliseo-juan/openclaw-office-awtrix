@@ -2,12 +2,6 @@
 
 Run host commands as the same operating-system user that runs the OpenClaw Gateway. A plugin installation is not complete until the bridge reports both `connected: true` and `complete: true`, and the clock can reach it.
 
-## Choose your starting point
-
-- **Existing working Office bridge:** preserve its private configuration and entire identity directory. Go to [reuse an existing bridge](#reuse-an-existing-bridge).
-- **First installation:** create private configuration and pair a device using [first installation](#first-installation).
-- **Installed but not working:** use [troubleshooting](#troubleshooting). Do not reinstall repeatedly or rotate tokens without diagnosing the failure.
-
 ## Install the plugin
 
 ```sh
@@ -23,29 +17,7 @@ openclaw config set plugins.entries.openclaw-office.hooks \
 
 If installation says the manifest ID differs from the npm package name, use **`openclaw-office`** for all configuration and plugin commands. This is informational.
 
-## Reuse an existing bridge
-
-Set the actual absolute path of its existing private configuration; do not recreate it or copy just the token:
-
-```sh
-OFFICE_CONFIG="$HOME/.config/openclaw-office/config.json"
-test -r "$OFFICE_CONFIG"
-openclaw config set plugins.entries.openclaw-office.config.configPath "$OFFICE_CONFIG"
-```
-
-If the file does not exist, stop and follow first installation. Preserve `gateway.url`, `gateway.stateDirectory`, authentication mode and HTTP binding. Relative credential and identity paths resolve relative to this file, not to the plugin directory.
-
-Before enabling, identify how the previous bridge is managed. Stop only that bridge to release its HTTP port. For a user systemd service actually named `openclaw-office.service`:
-
-```sh
-systemctl --user stop openclaw-office.service
-```
-
-Do not disable its automatic startup until the plugin's health is verified. Keep this as the rollback path.
-
-Continue to [enable and verify](#enable-and-verify).
-
-## First installation
+## Create the private configuration
 
 Create a working checkout for configuration examples, pairing and diagnostics. The checkout is not where secrets belong:
 
@@ -118,13 +90,7 @@ Expected response:
 {"connected":true,"complete":true}
 ```
 
-A successful HTTP response with false flags is **not** a complete installation. Once ready, verify `/api/display?page=0` and reachability from another device on the clock's network. Only after success, disable the old standalone service if one was replaced:
-
-```sh
-systemctl --user disable openclaw-office.service
-```
-
-Use that command only if this was the previous service's actual name.
+A successful HTTP response with false flags is **not** a complete installation. Once ready, verify `/api/display?page=0` and reachability from another device on the clock's network. Do not consider setup complete until these checks pass.
 
 ## Install the AWTRIX app
 
@@ -136,21 +102,79 @@ Use that command only if this was the previous service's actual name.
 
 AWTRIX app version and plugin package version are independent. No AWTRIX Hub listing has been published by this repository.
 
+## Recover a missing authentication token
+
+Use this procedure when HTTP responds with `connected:false` and the private diagnostic or Gateway logs show `token_missing`. An identity file alone is not a paired device: `gateway.auth: {"mode":"device"}` requires a valid saved token in the configured state directory. Installation and capability approval do not create that token.
+
+Run these steps as the Gateway's OS user. Keep the existing `gateway.url`, `gateway.stateDirectory`, identity files and HTTP settings. Do not delete the identity or copy an unrelated device token.
+
+1. Pause the plugin while repairing its credentials:
+
+   ```sh
+   openclaw plugins disable openclaw-office
+   openclaw gateway restart
+   ```
+
+2. On the Gateway host, retrieve the bootstrap token in a private interactive terminal:
+
+   ```sh
+   openclaw gateway auth-token --show
+   ```
+
+   Open `$HOME/.config/openclaw-office/gateway-token` in a private text editor and save only that token. Do not paste it in chat, command arguments or screenshots. Then protect the file:
+
+   ```sh
+   chmod 600 "$HOME/.config/openclaw-office/gateway-token"
+   ```
+
+3. Edit `$HOME/.config/openclaw-office/config.json`. Replace **only** `gateway.auth` with:
+
+   ```json
+   {"mode":"device","tokenFile":"./gateway-token"}
+   ```
+
+   This relative filename assumes the token and configuration are in the same private directory. Preserve the other fields.
+
+4. From the repository checkout with dependencies installed, run:
+
+   ```sh
+   node payload/bridge/inspect.mjs --config "$HOME/.config/openclaw-office/config.json"
+   ```
+
+   If it requests pairing, run `openclaw devices list` and approve only the exact request generated for this device, using `openclaw devices approve YOUR_EXACT_REQUEST_ID`. Confirm it requests only `operator.read`. Rerun the diagnostic after approval. If no request is pending and authentication fails, stop and inspect the diagnostic; do not approve unrelated devices or increase permissions.
+
+5. Require a successful diagnostic with `authenticated: true` and `deviceTokenStored: true`. Run it a second time and require `authenticationSource: "paired-device"`. If the token is not stored or the second run fails, **keep the bootstrap file and configuration** and diagnose the failure before continuing.
+
+6. Change `gateway.auth` to `{"mode":"device"}`, removing `tokenFile`, and run the diagnostic again. Require paired-device authentication without the bootstrap selector. Only then delete the unneeded bootstrap file:
+
+   ```sh
+   rm "$HOME/.config/openclaw-office/gateway-token"
+   ```
+
+7. Enable the plugin and apply the change:
+
+   ```sh
+   openclaw plugins enable openclaw-office
+   openclaw gateway restart
+   ```
+
+   Follow [enable and verify](#enable-and-verify) to check the actual HTTP interface. Both health flags must become true. This procedure is documented, not an assertion that pairing has already succeeded on your host.
+
 ## Troubleshooting
 
 | Observation | Meaning and next check |
 | --- | --- |
 | curl cannot connect / doctor `unreachable` | Check the exact configured interface/port and whether the child is running. Do not infer an auth failure from a network failure. |
 | HTTP 200, `connected:false` | HTTP is running; Gateway authentication or reachability failed. Run the private pairing diagnostic with the same configuration, OS user and identity directory. |
-| `token_missing` | No usable credential reached the Gateway. Check the exact origin and identity directory, paired token availability, secret-file permissions and bootstrap configuration. A saved token alone does not prove the Gateway still accepts it. |
+| `token_missing` | Follow [recover a missing authentication token](#recover-a-missing-authentication-token). A device identity without a valid saved token needs bootstrap pairing. |
 | `device_token_mismatch` | The saved token is rejected. Inspect device management and re-pair the exact installation if required; do not reuse unrelated identities or increase scopes. |
 | `connected:true`, `complete:false` | Session synchronization is incomplete; idle status is not established. Check plugin-specific errors and retry the diagnostic before claiming success. |
 | HTTP works on host, clock is stale | Check LAN reachability, firewall, scheme, port and `bridge_url`; localhost on the clock means the clock itself. |
-| Port already in use | Stop the identified old bridge, not arbitrary processes. Keep the previous configuration for rollback. |
+| Port already in use | Identify the process owning the configured port. Choose a free port or stop that specific process only when authorized. |
 | Plugin exits | Inspect plugin-specific logs, configuration path and dependency installation. Child output is not forwarded to shared logs; use the private diagnostic instead. |
 
 For user systemd Gateway installations, inspect logs locally with `journalctl --user -u openclaw-gateway.service -n 100 --no-pager`. Logs can contain private network and device metadata: redact them before sharing. Do not use `curl -s` alone; it hides connection errors.
 
-## Rollback
+## Stop or uninstall
 
-Disable this plugin and restart the Gateway before starting the previous bridge service. Restore only settings changed for this installation. Preserve private pairing files. Never run both bridge owners on the same port.
+Disable this plugin and restart the Gateway to stop its bridge. Preserve private pairing files if you intend to reinstall. To remove the package, use `openclaw plugins uninstall openclaw-office`; review its confirmation before accepting. Installation does not authorize deleting unrelated services or device identities.
