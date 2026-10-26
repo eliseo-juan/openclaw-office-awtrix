@@ -33,3 +33,13 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
     process.exitCode = 2;
   }
 }
+
+export async function verifyDisplay(config, reachableHost, request = fetch) {
+  const url = new URL('/api/display?page=0', healthUrl(config, reachableHost));
+  try {
+    const response = await request(url, {signal: AbortSignal.timeout(5000)});
+    if (!response.ok) return false;
+    const body = await response.json();
+    return body.schema === 1 && body.connected === true && body.complete === true && Array.isArray(body.agents) && Number.isInteger(body.pages) && body.pages >= 1;
+  } catch { return false; }
+}

@@ -1,0 +1,18 @@
+# Changelog
+
+## 0.2.0
+
+- Add `openclaw office setup` for local Gateway detection, private configuration, read-only device pairing, hook restrictions, plugin activation and health verification.
+- Reconnect using only the saved device token before enabling the bridge; bootstrap credentials remain in memory.
+- Register setup before Office configuration exists. No running bridge is required to discover the command.
+- Add explicit remote/private-file and LAN host/port options, unattended consent, bounded retries and actionable sanitized failures.
+- Make setup the primary path in the README, installation guide and bundled agent skill. Manual authentication remains an advanced reference.
+- Validate scoped SDK pairing against an isolated Gateway fixture and CLI discovery with OpenClaw 2026.9.2 in an isolated profile. Fixture verification does not prove pairing against an individual's live Gateway.
+
+## 0.1.1
+
+- Add the agent installation skill, manual installation guide and interface-aware health diagnostic.
+
+## 0.1.0
+
+- Package the existing bridge as an OpenClaw-managed service with the single-file AWTRIX application.

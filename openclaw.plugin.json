@@ -11,9 +11,6 @@
   "configSchema": {
     "type": "object",
     "additionalProperties": false,
-    "required": [
-      "configPath"
-    ],
     "properties": {
       "configPath": {
         "type": "string",
@@ -30,5 +27,12 @@
   },
   "skills": [
     "./skills"
+  ],
+  "cliCommands": [
+    {
+      "name": "office",
+      "description": "Set up the AWTRIX Office bridge",
+      "hasSubcommands": true
+    }
   ]
 }

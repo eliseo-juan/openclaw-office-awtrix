@@ -1,37 +1,24 @@
-# Authentication reference
+# Advanced authentication reference
 
-Start with the [complete installation guide](../../docs/INSTALL.md). It is the canonical walkthrough for first installation, migration, verification and the AWTRIX app. This page describes the bridge's credential options.
+For normal installation use [the setup command](../../docs/INSTALL.md). It handles private configuration, bootstrap pairing, saved-token verification and activation without copying tokens.
 
-## 2. Choose Gateway authentication
+The bridge also supports manually authored configuration for advanced deployments. Keep it outside the source repository with file mode 600; protect its identity directory with mode 700. Relative file/state paths resolve relative to the configuration file.
 
-Recommended: device pairing with `operator.read`. Bootstrap with your own Gateway credential, approve the exact new device request, then retain the private device identity and scoped token together.
+| `gateway.auth` | Purpose |
+| --- | --- |
+| `{"mode":"device"}` | Use a saved paired token and device identity. A fresh identity alone does not authenticate. |
+| `{"mode":"device","tokenFile":"./gateway-token"}` | Bootstrap manually from a private token file. |
+| `{"mode":"token","tokenEnv":"OPENCLAW_GATEWAY_TOKEN"}` | Load a token from the specified environment variable. |
+| `{"mode":"password","passwordFile":"./gateway-password"}` | Bootstrap with a private password file; pairing may still be required. |
 
-| Mode | `gateway.auth` | Behavior |
-| --- | --- | --- |
-| New device | `{"mode":"device","tokenFile":"./gateway-token"}` | Bootstrap pairing from a private credential file. |
-| Already paired | `{"mode":"device"}` | Reuse the device identity and token stored in `gateway.stateDirectory`. |
-| Token | `{"mode":"token","tokenEnv":"OPENCLAW_GATEWAY_TOKEN"}` | Read the token from the specified environment variable; reuse a saved paired token if available. |
-| Password | `{"mode":"password","passwordFile":"./gateway-password"}` | Read a private password file; pairing can still be required by Gateway policy. |
+For file/env secret sources use `tokenFile` / `passwordFile` or `tokenEnv` / `passwordEnv`. Interactive environment variables do not automatically reach a systemd service. Setup's supported SecretRef fallback is an explicit private file; it does not resolve arbitrary secret providers.
 
-Use `tokenFile` / `passwordFile` for private files or `tokenEnv` / `passwordEnv` for configurable environment variable names. File paths, including `stateDirectory`, resolve relative to the private configuration file. The OpenClaw service must have permission to read them. Interactive shell environment variables do not automatically reach a systemd Gateway service; private files are simpler for that deployment.
+A paired token belongs to the exact Gateway origin, role and device identity. Do not copy only the token, delete identity files as a retry strategy, or increase scopes to solve authentication. Setup requests `operator.read` and reconnects without bootstrap before considering authentication complete.
 
-The default example stores `./identity` and `./gateway-token` next to the private configuration. A fresh install needs a bootstrap credential; creating an empty identity directory does not authenticate it. The inspection command is:
-
-```sh
-node payload/bridge/inspect.mjs --config /absolute/path/to/config.json
-```
-
-Run it from a source checkout with its dependencies installed. It writes its detailed report in the private state directory. Inspect it locally; device IDs, roster and network details should not be copied to public issues.
-
-Pairing approval is separate from installation consent. On the Gateway host:
+Manual private diagnostic from a source checkout with dependencies installed:
 
 ```sh
-openclaw devices list
-openclaw devices approve YOUR_EXACT_REQUEST_ID
+node payload/bridge/inspect.mjs --config /absolute/private/config.json
 ```
 
-Verify that the request belongs to this installation and requests only `operator.read`. Rerun the diagnostic after approval. Require `authenticated: true`; a subsequent run should use `authenticationSource: "paired-device"`.
-
-Only after verification, change `gateway.auth` to `{"mode":"device"}` and remove the bootstrap selector before deleting its unneeded credential file. A saved device token is bound to its Gateway origin, device identity and role. Moving identities between operating systems may require a new metadata approval. Do not recreate, delete or copy only part of a working identity directory as a generic repair step.
-
-The plugin's prompt/conversation hook policy is independent from bridge authentication. Disabling both hooks does not grant or revoke the paired Gateway credential. This plugin does not need conversation hooks and never requests conversation transcripts through its display projection.
+Its report can contain network/device/roster metadata. Inspect it privately and redact before sharing. The plugin's hook policy is independent from device authentication: denying prompt/conversation hooks does not revoke the paired Gateway token.

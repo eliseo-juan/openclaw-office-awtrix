@@ -1,43 +1,24 @@
 ---
 name: install-openclaw-office
-description: Install, configure, verify, or troubleshoot the OpenClaw Office bridge plugin and its AWTRIX TC002 script, including private configuration, device pairing and authentication recovery.
+description: Install, configure, verify, or troubleshoot OpenClaw Office for AWTRIX using its setup command, with private read-only device pairing and clock connection.
 ---
 
 # Install OpenClaw Office
 
-Use the repository's [installation guide](../../docs/INSTALL.md) as the command reference. This skill is shipped by the plugin; it can guide configuration after plugin installation. For bootstrap before installation, clone the repository and load this file explicitly using the agent's skill mechanism. Do not assume the host has already discovered a skill from an uninstalled plugin.
+Use [installation and troubleshooting](../../docs/INSTALL.md). For first install, run the standard Git plugin installer and `openclaw office setup`. Do not manually construct JSON or ask a user to copy tokens when setup can use the local Gateway credential. Before plugin installation, load this skill from a trusted repository checkout; do not assume an uninstalled plugin's skill is already discovered.
 
-## Establish the target
+## Execution
 
-Identify the Gateway host, OS user, installed OpenClaw version, desired clock-reachable HTTP address/port, and whether this is a fresh installation or an existing Office bridge. Inspect current plugin status and only relevant non-secret configuration fields before changing them. Do not dump the Gateway configuration or environment into tool output.
+Identify the Gateway host and OS user, confirm plugin source and version, and inspect whether the plugin was left disabled. Update older versions, review the new `office` CLI capability and enable if necessary so `openclaw office setup --help` works. Do not dump Gateway config, environment or private state into tool output.
 
-An install request authorizes preparing this plugin and its private configuration; do not infer authorization to publish data, change unrelated plugins, weaken Gateway authentication, or revoke devices. Explain any required Gateway restart and obtain approval if the user's authorization does not cover interrupting it.
+Run setup on the Gateway machine. A user request to install does not authorize unrelated service changes or publishing data. Explain that setup can approve its newly created read-only device and restart the Gateway; use `--yes` for unattended execution only when that authorization is clear. Otherwise run interactively. Do not approve other devices or widen scopes.
 
-## Select the correct path
+Setup detects local plain token/password credentials or inherited standard environment variables, retains them only in memory, verifies a saved `operator.read` token, denies prompt/conversation hooks, and prints a clock-reachable bridge URL. If it asks for a private credential file or LAN address, obtain only the missing information. Never request tokens in chat, command arguments, screenshots or repository files. Remote Gateway credentials must be supplied explicitly with a protected file; local credentials must not be sent to unrelated Gateway origins.
 
-If configuration or device state already exists, inspect and preserve it rather than overwriting it. Do not assume a previous standalone service exists. Diagnose port conflicts before stopping any process.
+Preserve existing configuration, origin and identity. Use a separate `--config` for a different Gateway. On failure, follow the guide's specific error, with at most three diagnostic retries; do not repeatedly reinstall or delete identity files. Setup does not stop arbitrary services or change firewall rules.
 
-For a fresh installation, follow the guide's private-config and device-pairing steps. Create directories with mode 700 and secret/config files with mode 600, without overwriting existing files. Ask only for missing non-secret addresses and preferences. If the user authorized reading an existing local Gateway credential, transfer it programmatically into a protected bootstrap file without printing it. Otherwise have the user enter it privately; never request a token in chat or place it in command arguments, repository files or shared logs. Use the diagnostic with `operator.read`; approve only the newly created device request when authorized, and stop if approval requests broader scopes. Remove bootstrap configuration only after paired-device authentication succeeds.
+## Acceptance
 
-## Configure and activate
+Do not claim completion unless setup prints `Ready`, both health flags are true and `/api/display?page=0` is valid. Verify clock-network reachability separately. HTTP reachable but `connected:false` is an authentication/connection failure; `complete:false` is incomplete synchronization. Use the actual configured interface rather than assuming loopback.
 
-Use manifest ID `openclaw-office`, not the npm package name, in host configuration. Set both `hooks.allowPromptInjection` and `hooks.allowConversationAccess` to false. On OpenClaw 2026.9.2 the installer's prompt defaults are host-owned; do not claim an empty manifest disables them. Preserve other configuration entries.
-
-Set `config.configPath` to the absolute private bridge file. Enable the plugin and apply the Gateway restart/reload appropriate to the installed version. Installing a configured-required plugin can leave it disabled; installation success does not imply runtime readiness.
-
-## Verify before reporting success
-
-Run the repository's `scripts/doctor.mjs` with the private config path. Use the configured HTTP interface, not assumed loopback. Wildcard listeners require an explicit reachable host via `--host`. Never configure AWTRIX with localhost, `0.0.0.0`, or the OpenClaw WSS URL when the bridge lives on another machine.
-
-Distinguish:
-
-- Unreachable: listener, interface, port, process or network failure.
-- HTTP reachable but `connected:false`: Gateway connection/authentication failure; run the private diagnostic with the same config, origin, OS user and device state.
-- Connected but incomplete: synchronization is not ready; never infer idle from missing evidence.
-- Ready: both booleans true, valid `/api/display?page=0`, and reachability from the clock network.
-
-Use finite request timeouts, visible error output and at most three diagnostic retries before reporting an unresolved blocker. Do not repeatedly reinstall, rotate credentials, or delete identity files as a generic retry strategy. Report only sanitized error codes and actionable next steps.
-
-After bridge verification, install or update the single-file `OpenClawOfficeLive.ax` through the user's available AWTRIX controls. Preserve an existing script's settings and the display power state. Set only its reachable `bridge_url` and requested visual parameters. Verify native script errors and roster when supported. Distinguish a verified bridge from untested clock behavior or unobserved working-to-idle transitions.
-
-On failure report the exact stage and leave unrelated services unchanged. For `token_missing`, follow the guide's recovery procedure and verify paired-device authentication before removing the bootstrap credential. Report checks actually run and remaining limitations without including credentials or private identifiers.
+Install or update `OpenClawOfficeLive.ax` through available AWTRIX controls. Preserve existing native settings and display power. Set `bridge_url` to the setup output; never use the Gateway WSS URL, localhost on another device, or a wildcard listener address. Report bridge verification separately from native script errors, roster rendering and unobserved real working-to-idle transitions.
