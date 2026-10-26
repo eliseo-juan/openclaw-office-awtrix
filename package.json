@@ -25,7 +25,7 @@
   },
   "dependencies": {
     "@openclaw/gateway-client": "2026.8.1",
-    "@openclaw/gateway-protocol": "2026.8.1"
+    "@openclaw/gateway-protocol": "2026.10.6"
   },
   "peerDependencies": {
     "openclaw": ">=2026.9.2"
