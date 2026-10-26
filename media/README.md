@@ -6,6 +6,7 @@ Original promotional artwork and browser recordings for OpenClaw Office on AWTRI
 
 | File | Use |
 | --- | --- |
+| [awtrix-hub.gif](assets/awtrix-hub.gif) | Recommended Hub upload: complete film condensed to 9.6 seconds; 800 × 450, under 8 MB |
 | [hub-cover.gif](assets/hub-cover.gif) | Animated cover for the Hub; 960 × 540, 10 seconds, looping |
 | [hub-cover.png](assets/hub-cover.png) | Static cover; 1600 × 900 |
 | [cover-loop.mp4](assets/cover-loop.mp4) | Compact animated cover; 1600 × 900, 10 seconds |
@@ -17,7 +18,7 @@ Original promotional artwork and browser recordings for OpenClaw Office on AWTRI
 | [05-second-floor.png](assets/05-second-floor.png) | Twelve Wisp agents, second floor |
 | [06-bot-styles.png](assets/06-bot-styles.png) | All sixteen supported bot styles |
 
-The six gallery images are 1600 × 1000. Videos are silent H.264 MP4 files with fast-start metadata. The GIF is the recommended animated Hub cover. Its whole-office style changes demonstrate Jelly, Orbit, Wisp and Circuit. Upload limits have not been verified in an authenticated Hub submission form; these are prepared assets, not a published Hub listing.
+The six gallery images are 1600 × 1000. Videos are silent H.264 MP4 files with fast-start metadata. Use `awtrix-hub.gif` for the Hub upload. Its whole-office style changes demonstrate Jelly, Orbit, Wisp and Circuit. The upload form shown by the user accepts JPG, PNG or GIF, with GIFs limited to 10 seconds and 8 MB. The recommended GIF was checked against both limits; no Hub listing has been published.
 
 ## Story
 

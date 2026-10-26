@@ -45,4 +45,5 @@ sleep 10
 browser record stop
 ffmpeg -hide_banner -loglevel error -y -i "$tmp_dir/cover.mp4" -t 10 -vf 'fps=30' -c:v libx264 -preset slow -crf 19 -pix_fmt yuv420p -movflags +faststart -an "$output/cover-loop.mp4"
 ffmpeg -hide_banner -loglevel error -y -i "$output/cover-loop.mp4" -filter_complex '[0:v]fps=10,scale=960:-1:flags=lanczos,split[a][b];[a]palettegen=stats_mode=diff[p];[b][p]paletteuse=dither=sierra2_4a:diff_mode=rectangle' -loop 0 "$output/hub-cover.gif"
+ffmpeg -hide_banner -loglevel error -y -i "$output/showcase.mp4" -filter_complex '[0:v]setpts=0.4*PTS,fps=10,scale=800:-1:flags=lanczos,split[a][b];[a]palettegen=max_colors=96:stats_mode=full[p];[b][p]paletteuse=dither=none:diff_mode=rectangle' -t 9.6 -loop 0 "$output/awtrix-hub.gif"
 printf 'Media saved to %s\n' "$output"
