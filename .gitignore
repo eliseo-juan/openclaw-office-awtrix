@@ -4,3 +4,4 @@ identity/
 .env
 *.tgz
 .DS_Store
+reports/

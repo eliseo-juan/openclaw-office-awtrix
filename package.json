@@ -19,7 +19,9 @@
     "CHANGELOG.md"
   ],
   "scripts": {
-    "test": "node --test *.test.mjs payload/bridge/*.test.mjs media/*.test.mjs"
+    "test": "node --test *.test.mjs payload/bridge/*.test.mjs media/*.test.mjs",
+    "check": "node scripts/check-integrity.mjs",
+    "plugin:check": "plugin-inspector ci --no-openclaw --runtime --mock-sdk --allow-execute"
   },
   "dependencies": {
     "@openclaw/gateway-client": "2026.8.1",
@@ -36,5 +38,24 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/eliseo-juan/openclaw-office-awtrix.git"
-  }
+  },
+  "devDependencies": {
+    "@openclaw/plugin-inspector": "0.4.4",
+    "yaml": "2.8.3"
+  },
+  "engines": {
+    "node": ">=22.22.3"
+  },
+  "bugs": {
+    "url": "https://github.com/eliseo-juan/openclaw-office-awtrix/issues"
+  },
+  "homepage": "https://github.com/eliseo-juan/openclaw-office-awtrix#readme",
+  "keywords": [
+    "openclaw",
+    "openclaw-plugin",
+    "awtrix",
+    "awtrix-ng",
+    "pixel-art",
+    "agent-monitoring"
+  ]
 }
