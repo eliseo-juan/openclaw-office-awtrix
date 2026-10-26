@@ -26,6 +26,10 @@ The native OpenClaw plugin manages a read-only companion bridge. The clock polls
 
 All runtime files are committed; installation requires no build step. The AWTRIX script's visual/rotation settings are independent from the bridge plugin version. No AWTRIX Hub listing has been submitted.
 
+## Media
+
+The [media kit](media/README.md) includes a product film, animated cover, gallery images and a reproducible browser showcase with simulated activity.
+
 ## Development
 
 ```sh
