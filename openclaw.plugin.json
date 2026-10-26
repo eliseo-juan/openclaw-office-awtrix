@@ -2,15 +2,33 @@
   "id": "openclaw-office",
   "name": "OpenClaw Office",
   "description": "Manages the read-only bridge for an AWTRIX pixel office.",
-  "categories": ["other"],
-  "activation": {"onStartup": true},
+  "categories": [
+    "other"
+  ],
+  "activation": {
+    "onStartup": true
+  },
   "configSchema": {
     "type": "object",
     "additionalProperties": false,
-    "required": ["configPath"],
+    "required": [
+      "configPath"
+    ],
     "properties": {
-      "configPath": {"type": "string", "minLength": 1, "description": "Absolute path to the private bridge JSON configuration."}
+      "configPath": {
+        "type": "string",
+        "minLength": 1,
+        "description": "Absolute path to the private bridge JSON configuration."
+      }
     }
   },
-  "uiHints": {"configPath": {"label": "Bridge configuration file", "placeholder": "/home/your-user/.config/openclaw-office/config.json"}}
+  "uiHints": {
+    "configPath": {
+      "label": "Bridge configuration file",
+      "placeholder": "/home/your-user/.config/openclaw-office/config.json"
+    }
+  },
+  "skills": [
+    "./skills"
+  ]
 }
