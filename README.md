@@ -8,6 +8,7 @@ On the OpenClaw Gateway machine:
 
 ```sh
 openclaw plugins install git:github.com/eliseo-juan/openclaw-office-awtrix
+openclaw plugins enable openclaw-office
 openclaw office setup
 ```
 

@@ -6,6 +6,7 @@ Run these commands on the OpenClaw Gateway machine, as the same OS user that run
 
 ```sh
 openclaw plugins install git:github.com/eliseo-juan/openclaw-office-awtrix
+openclaw plugins enable openclaw-office
 ```
 
 Accept the source and capability review if you trust this repository. On OpenClaw 2026.9.2 the review can say `Prompt injection: allowed` because this is a host default, not a hook used by this plugin. The setup command explicitly disables prompt injection and conversation access.
@@ -16,7 +17,7 @@ If you already installed an older Office version, update it first:
 openclaw plugins update openclaw-office
 ```
 
-Review the new `office` CLI capability when requested. If the plugin was left disabled by an older installation, run `openclaw plugins enable openclaw-office` after updating so OpenClaw can discover the command.
+Review the new `office` CLI capability when requested. Always run `openclaw plugins enable openclaw-office` after installation or updating. Reinstallation can preserve an existing `enabled:false` entry; installed does not mean enabled. The setup command is unavailable while the plugin is disabled. With no Office configuration yet, enabling registers the CLI without starting a bridge.
 
 ## 2. Run setup
 

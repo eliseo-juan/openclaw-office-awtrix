@@ -9,7 +9,7 @@ Use [installation and troubleshooting](../../docs/INSTALL.md). For first install
 
 ## Execution
 
-Identify the Gateway host and OS user, confirm plugin source and version, and inspect whether the plugin was left disabled. Update older versions, review the new `office` CLI capability and enable if necessary so `openclaw office setup --help` works. Do not dump Gateway config, environment or private state into tool output.
+Identify the Gateway host and OS user, confirm plugin source and version, and inspect whether the plugin was left disabled. Update older versions, review the new `office` CLI capability and explicitly enable the plugin after installation or updating so `openclaw office setup --help` works. Do not dump Gateway config, environment or private state into tool output.
 
 Run setup on the Gateway machine. A user request to install does not authorize unrelated service changes or publishing data. Explain that setup can approve its newly created read-only device and restart the Gateway; use `--yes` for unattended execution only when that authorization is clear. Otherwise run interactively. Do not approve other devices or widen scopes.
 
