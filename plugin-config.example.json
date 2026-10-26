@@ -1,0 +1,16 @@
+{
+  "plugins": {
+    "entries": {
+      "openclaw-office": {
+        "enabled": false,
+        "hooks": {
+          "allowPromptInjection": false,
+          "allowConversationAccess": false
+        },
+        "config": {
+          "configPath": "/home/your-user/.config/openclaw-office/config.json"
+        }
+      }
+    }
+  }
+}

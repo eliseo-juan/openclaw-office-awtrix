@@ -6,13 +6,15 @@ This repository is a native OpenClaw plugin. It manages the companion bridge pro
 
 ## Install
 
-With an OpenClaw version supporting Git plugin installation:
+First merge the restricted plugin policy from [plugin-config.example.json](plugin-config.example.json) into your OpenClaw configuration, preserving existing entries and setting your own absolute `configPath`. Keep the entry disabled until the bridge configuration is ready. Then, with an OpenClaw version supporting Git plugin installation:
 
 ```sh
 openclaw plugins install git:github.com/eliseo-juan/openclaw-office-awtrix
 ```
 
 The plugin manifest and all runtime files are committed at the repository root; no build step is required. OpenClaw installs the pinned bridge dependencies. Git installation support varies by host version; local archive installation is also supported.
+
+The repository cannot override host-owned capability policy. Reinstalling or updating alone does not revoke a previously accepted permission: apply the `hooks` values below in your OpenClaw configuration first. The installation prompt should then report prompt injection and conversation access as denied.
 
 ## Configure
 
@@ -25,6 +27,10 @@ The plugin manifest and all runtime files are committed at the repository root; 
     "entries": {
       "openclaw-office": {
         "enabled": true,
+        "hooks": {
+          "allowPromptInjection": false,
+          "allowConversationAccess": false
+        },
         "config": {
           "configPath": "/home/your-user/.config/openclaw-office/config.json"
         }

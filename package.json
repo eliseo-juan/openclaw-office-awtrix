@@ -11,7 +11,8 @@
     "payload",
     "README.md",
     "LICENSE",
-    "OpenClawOfficeLive.ax"
+    "OpenClawOfficeLive.ax",
+    "plugin-config.example.json"
   ],
   "scripts": {
     "test": "node --test *.test.mjs payload/bridge/*.test.mjs"
