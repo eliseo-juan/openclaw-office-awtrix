@@ -1,7 +1,10 @@
 const canvas = document.querySelector('canvas'), ctx = canvas.getContext('2d');
 const palette = [0x55c8c0,0xa59aeb,0xf19865,0xe8c25e,0xe281ad,0x8bc775,0x6da9ee,0xccccba];
+const setupMode = new URLSearchParams(location.search).get('preview') === 'setup';
+const setupPreview = officeConnectionUi.setupPreview();
 const motions = new Map();
 let data = {connected: false, complete: false, agents: []}, page = 0, receivedAt = 0;
+if (setupMode) data = {connected:false,complete:false,agents:setupPreview.positions.map((_,i)=>({id:`setup-${i}`,label:`Example ${i+1}`,state:'idle'}))};
 const positions = new Map();
 let lastLayout;
 const caffeineSelect = document.querySelector('#caffeine-level');
@@ -20,25 +23,26 @@ function rect(x,y,w,h,color) {
   ctx.fillRect(x*10,y*10,w*10,h*10);
 }
 function draw() {
-  const fresh = Date.now() - receivedAt < 20000 && data.connected;
+  const connection = setupMode ? {offline:false,wallColor:0x364655} : officeConnectionUi.connectionPresentation(data.connected,receivedAt,Date.now(),20000);
+  const fresh = !connection.offline;
   const layout = layoutFor(data.agents.map(a => a.id), page); page = layout.page;
   const signature=layout.seats.map(s=>`${s.agentId}:${s.bot.x},${s.bot.y}`).join(';');
   if(signature!==lastLayout){positions.clear();motions.clear();lastLayout=signature;}
   document.querySelectorAll('#agents small').forEach((label,i) => { label.textContent = fresh ? data.agents[i].state : 'unknown'; });
   rect(0,0,52,16,0x080c10); rect(0,0,layout.divider,16,0x120e09);
-  rect(0,0,52,1,0x364655); rect(0,15,52,1,0x364655); rect(0,0,1,16,0x364655);
-  for (const x of [layout.divider,51]) { rect(x,0,1,6,0x364655); rect(x,10,1,6,0x364655); }
+  rect(0,0,52,1,connection.wallColor); rect(0,15,52,1,connection.wallColor); rect(0,0,1,16,connection.wallColor);
+  for (const x of [layout.divider,51]) { rect(x,0,1,6,connection.wallColor); rect(x,10,1,6,connection.wallColor); }
   for (const [x,y,w,h,color] of kitchenFor(layout.divider,{wood:0x92613a,edge:0x4a3326,plant:0x488d55})) rect(x,y,w,h,color);
   for (const d of layout.desktops) rect(d.x,d.y,d.width,d.height,0x92613a);
   const bots = [];
   layout.seats.forEach((seat,i) => {
     const agent = data.agents[page*8+i], state = fresh ? agent.state : 'unknown';
     const key = `${page}:${agent.id}`;
-    let pos = positions.get(key) ?? [seat.bot.x,seat.bot.y];
+    let pos = setupMode ? [setupPreview.positions[i][0]-1,setupPreview.positions[i][1]] : positions.get(key) ?? [seat.bot.x,seat.bot.y];
     if (!motions.has(key)) motions.set(key,new CafeMotion(undefined,{caffeine:caffeineSelect.value}));
     const peers=layout.seats.filter(s=>s.agentId!==agent.id).map(s=>positions.get(`${page}:${s.agentId}`)??[s.bot.x,s.bot.y]);
     const reserved=layout.seats.filter(s=>s.agentId!==agent.id).map(s=>motions.get(`${page}:${s.agentId}`)?.target).filter(Boolean);
-    pos = motions.get(key).advance(pos,[seat.bot.x,seat.bot.y],state,layout.divider,Date.now(),{peers,reserved,desktops:layout.desktops});
+    if (!setupMode) pos = motions.get(key).advance(pos,[seat.bot.x,seat.bot.y],state,layout.divider,Date.now(),{peers,reserved,desktops:layout.desktops});
     positions.set(key,pos);
     if (pos[0] !== seat.bot.x || pos[1] !== seat.bot.y) {
       rect(seat.chair.x,seat.chair.y,3,2,0x364655); rect(seat.chair.x+1,seat.chair.y+(seat.facing==='up'?0:1),1,1,0x27353e);
@@ -51,9 +55,18 @@ function draw() {
   for (const {pos:[x,y],color} of bots) style.rows.forEach((row,r) => [...row].forEach((cell,c) => {
     if (cell === 'o') rect(x+Math.floor((5-style.width)/2)+c,y+3-style.rows.length+r,1,1,color);
   }));
-  rect(1,14,1,1,fresh&&data.complete?0x69d6bd:0xff5b65);
+  if(connection.offline) {
+    rect(10,4,31,7,0x080c10);
+    for(const [x,y] of officeConnectionUi.offlinePixels())rect(x,y,1,1,0xffa63d);
+  }
+  if(setupMode) {
+    rect(27,4,23,7,0x080c10);
+    setupPreview.letters.forEach((rows,letter)=>rows.forEach((mask,row)=>{
+      for(let col=0;col<3;col++)if(mask&(1<<(2-col)))rect(29+letter*4+col,5+row,1,1,0xd9f4ed);
+    }));
+  }
   document.querySelector('#floor').textContent = `Floor ${page+1} / ${layout.pageCount}`;
-  document.querySelector('#status').textContent = fresh ? (data.complete ? `${data.agents.length} agents · Live` : 'Synchronizing · incomplete activity remains unknown') : 'Offline · activity unknown';
+  document.querySelector('#status').textContent = setupMode ? 'Setup preview · example bots' : fresh ? (data.complete ? `${data.agents.length} agents · Live` : 'Synchronizing · incomplete activity remains unknown') : 'Offline · activity unknown';
 }
 async function refresh() {
   try {
@@ -75,4 +88,4 @@ async function refresh() {
 document.querySelector('#previous').onclick = () => { page = Math.max(0,page-1); };
 document.querySelector('#next').onclick = () => { page++; };
 function frame() { draw(); setTimeout(frame,caffeineProfiles[caffeineSelect.value].stepMs); }
-frame(); void refresh();
+frame(); if (!setupMode) void refresh();

@@ -51,6 +51,10 @@ For unattended setup after authorizing pairing and the restart, add `--yes`. No 
 3. Set **Bridge URL** (`bridge_url`) to the URL printed by setup and save the app settings.
 4. Start the app. `show_in_rotation=true` includes it in automatic rotation. Choose **Caffeine level**: **Decaf** for relaxed movement, **Coffee** for a balanced pace (default), or **Espresso** for more activity. Other settings control bot style, palette and floors.
 
+Before Bridge URL is configured, the clock shows six example bots in the cafe and **SETUP** over the desks. These are decorative placeholders, not discovered agents. Enter and save Bridge URL in the app settings to switch to live data.
+
+A healthy connection uses the normal office view, with no status dot. On disconnection or stale data, walls turn orange and **OFFLINE** appears in the center; agent activity is treated as unknown. The warning clears when fresh connected data returns.
+
 The bridge and clock must be on mutually reachable networks. Publishing the Gateway under HTTPS does not publish the bridge's separate HTTP port. No AWTRIX Hub listing has been submitted by this repository.
 
 ## If setup needs more information

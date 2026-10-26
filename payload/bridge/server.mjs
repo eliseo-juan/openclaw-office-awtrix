@@ -67,7 +67,7 @@ const client = new GatewayClient({
     console.error(config.redact(String(error.message)).replaceAll(saved?.token ?? '\u0000', '[redacted]'));
   }
 });
-const assets = new Map([['/', 'live.html'], ['/live.js', 'live.js'], ['/cafe-motion.js', 'cafe-motion.js'], ['/bot-styles.js', 'bot-styles.js'], ['/kitchen.js', 'kitchen.js'], ['/spike/layout.js', 'spike/layout.js']]);
+const assets = new Map([['/', 'live.html'], ['/live.js', 'live.js'], ['/connection-ui.js', 'connection-ui.js'], ['/cafe-motion.js', 'cafe-motion.js'], ['/bot-styles.js', 'bot-styles.js'], ['/kitchen.js', 'kitchen.js'], ['/spike/layout.js', 'spike/layout.js']]);
 const server = createServer(async (req, res) => {
   res.setHeader('Cache-Control', 'no-store');
   if (req.method !== 'GET') { res.writeHead(405); res.end(); return; }

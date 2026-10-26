@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.4.0
+
+- Show a clearly labeled setup preview with six example cafe bots when Bridge URL is empty or still the old placeholder. Configuring the URL switches to live data; configured outages remain OFFLINE.
+- Remove the one-pixel connection indicator and its setting. Healthy connections use the normal office view; disconnection and stale data show orange walls and a centered OFFLINE label.
+- Match setup/offline presentation in the browser preview. AWTRIX script version is 0.5.0.
+
 ## 0.3.0
 
 - Replace four movement controls with one Caffeine level setting: Decaf, Coffee (default), or Espresso. Levels adjust both cafe pauses and walking pace. Existing low-level movement values are no longer read.

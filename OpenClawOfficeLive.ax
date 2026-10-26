@@ -1,15 +1,14 @@
 # @name OpenClaw Office
 # @desc A live pixel office for OpenClaw agents. Requires the OpenClaw Office bridge.
 # @author Eliseo Juan
-# @version 0.4.0
+# @version 0.5.0
 # @display 52x16
 # @config show_in_rotation bool "Show in rotation" default=true group="Display" help="Take automatic turns; off skips them while data keeps refreshing."
 # @config bot_style select "Bot style" default=Jelly group="Appearance" options=Capsule,Pebble,Diamond,Core,Spark,Crab,Manta,Saucer,Satellite,Chip,Circuit,Rune,Cursor,Wisp,Jelly,Orbit
-# @config bridge_url text "Bridge URL" default="http://office.local:8790" group="Connection" help="Companion bridge address reachable from this clock; no trailing slash."
+# @config bridge_url text "Bridge URL" default="" group="Connection" help="Enter the Bridge URL printed by openclaw office setup."
 # @config refresh_seconds number "Refresh interval" default=3 min=1 max=60 unit=s group="Connection"
 # @config stale_seconds number "Data timeout" default=15 min=5 max=300 unit=s group="Connection" help="Effective timeout is at least three refresh intervals."
 # @config palette select "Palette" default=Warm options=Warm,Clear group="Appearance"
-# @config show_status bool "Show connection indicator" default=true group="Appearance"
 # @config caffeine_level select "Caffeine level" default=Coffee options=Decaf,Coffee,Espresso group="Movement" help="Decaf: relaxed. Coffee: balanced. Espresso: lively."
 # @config start_floor number "Starting floor" default=1 min=1 max=1000 group="Floors"
 # @config auto_floor bool "Automatically change floor" default=false group="Floors"
@@ -19,8 +18,8 @@ import json
 
 class OpenClawOfficeLive
   var seats, shell, positions, elapsed, moved, last, paused, theme
-  var refresh_seconds, stale_ms, pause_min_ms, pause_max_ms, walk_ms, show_status
-  var auto_floor, floor_ms, floor_at, request_page
+  var refresh_seconds, stale_ms, pause_min_ms, pause_max_ms, walk_ms
+  var auto_floor, floor_ms, floor_at, request_page, setup_needed
   var targets, waits, seeds, blocked, sprite_width, sprite_height, rooms
   var agents, divider, columns, page, pages, received, connected, ticks, pending
   var floor_color, cafe_color, wall_color, wood_color, edge_color, plant_color, skin_color, active_color, off_color
@@ -60,12 +59,23 @@ class OpenClawOfficeLive
     self.pause_min_ms = caffeine[0]
     self.pause_max_ms = caffeine[1]
     self.walk_ms = caffeine[2]
-    self.show_status = store.get("show_status", true)
     self.auto_floor = store.get("auto_floor", false)
     self.floor_ms = store.get("floor_seconds", 20)*1000
     self.floor_at = now_ms()
     self.request_page = self.page
     self.set_palette()
+    self.setup_needed = self.needs_setup()
+    if self.setup_needed
+      self.page = 0
+      self.request_page = 0
+      var rows = []
+      var colors = [0x55C8C0,0xA59AEB,0xF19865,0xE8C25E,0xE281AD,0x8BC775]
+      for i : 0 .. 5
+        rows.push({"id":"setup-"+str(i),"state":"idle","x":32+(i%3)*7,"y":i<3 ? 4 : 9,"color":colors[i]})
+      end
+      self.receive(json.dump({"schema":1,"connected":false,"divider":26,"page":0,"pages":1,"agents":rows}),200)
+      self.positions = [[3,5],[9,5],[15,5],[21,5],[3,11],[16,11]]
+    end
   end
 
   def set_palette()
@@ -96,7 +106,14 @@ class OpenClawOfficeLive
     return store.get("show_in_rotation", true)
   end
 
+  def needs_setup()
+    var url = store.get("bridge_url", "")
+    return url == "" || url == "http://office.local:8790" || url == "http://office.local:8790/"
+  end
+
   def loop()
+    if self.needs_setup() != self.setup_needed self.init() end
+    if self.setup_needed return end
     if self.auto_floor && self.pages > 1 && now_ms()-self.floor_at >= self.floor_ms
       self.page = (self.page+1) % self.pages
       self.floor_at = now_ms()
@@ -107,7 +124,7 @@ class OpenClawOfficeLive
     self.ticks = self.refresh_seconds
     self.pending = true
     self.request_page = self.page
-    http.get(store.get("bridge_url", "http://office.local:8790") + "/api/display?page=" + str(self.page), / body, status -> self.receive(body, status))
+    http.get(store.get("bridge_url", "") + "/api/display?page=" + str(self.page), / body, status -> self.receive(body, status))
   end
 
   def receive(body, status)
@@ -170,6 +187,7 @@ class OpenClawOfficeLive
   end
 
   def state_for(i)
+    if self.setup_needed return 0 end
     if !self.connected || now_ms() - self.received > self.stale_ms return 4 end
     var state = self.agents[i].find("state", "unknown")
     if state == "working" return 1 end
@@ -340,31 +358,48 @@ class OpenClawOfficeLive
     end
   end
 
+  def draw_label(letters, x, color)
+    rect_fill(x-2,4,size(letters)*4+3,7,self.floor_color)
+    for letter : 0 .. size(letters)-1
+      for row : 0 .. 4
+        for col : 0 .. 2
+          if (letters[letter][row] & (1 << (2-col))) != 0 pixel(x+letter*4+col,5+row,color) end
+        end
+      end
+    end
+  end
+
+  def draw_offline()
+    var offline_letters = [[7,5,5,5,7],[7,4,6,4,4],[7,4,6,4,4],[4,4,4,4,7],[7,2,2,2,7],[5,7,7,7,5],[7,4,6,4,7]]
+    self.draw_label(offline_letters,12,0xFFA63D)
+  end
+
   def draw()
-    self.advance()
+    if !self.setup_needed self.advance() end
+    var online = self.connected && now_ms()-self.received <= self.stale_ms
+    var walls = online || self.setup_needed ? self.wall_color : 0xFFA63D
     clear()
     rect_fill(0,0,52,16,self.floor_color)
     rect_fill(0,0,self.divider,16,self.cafe_color)
-    rect_fill(0,0,52,1,self.wall_color)
-    rect_fill(0,15,52,1,self.wall_color)
-    rect_fill(0,0,1,16,self.wall_color)
-    rect_fill(51,0,1,6,self.wall_color)
-    rect_fill(51,10,1,6,self.wall_color)
-    rect_fill(self.divider,0,1,6,self.wall_color)
-    rect_fill(self.divider,10,1,6,self.wall_color)
+    rect_fill(0,0,52,1,walls)
+    rect_fill(0,15,52,1,walls)
+    rect_fill(0,0,1,16,walls)
+    rect_fill(51,0,1,6,walls)
+    rect_fill(51,10,1,6,walls)
+    rect_fill(self.divider,0,1,6,walls)
+    rect_fill(self.divider,10,1,6,walls)
     for r : self.rooms[str(self.divider)]
       var color = r[4]
       if color < 0 color = [self.wood_color,self.edge_color,self.plant_color][-color-1] end
       rect_fill(r[0],r[1],r[2],r[3],color)
     end
     if size(self.agents) == 0
-      text(23,9,self.connected ? "EMPTY" : "WAIT",self.wall_color)
+      if online text(23,9,"EMPTY",self.wall_color) else self.draw_offline() end
       return
     end
     var desk = self.seats[0][0]-3
     rect_fill(desk,1,51-desk,3,self.wood_color)
     if size(self.agents) > self.columns rect_fill(desk,12,51-desk,3,self.wood_color) end
-    if self.show_status pixel(1,14,self.connected && now_ms()-self.received <= self.stale_ms ? self.active_color : 0xFF5B65) end
     if size(self.agents) == 0 return end
     for i : 0 .. size(self.agents)-1
       var x = self.seats[i][0]
@@ -420,6 +455,12 @@ class OpenClawOfficeLive
         core = 0xD9F4ED
       end
       pixel(x+1,sprite_y+self.sprite_height/2,core)
+    end
+    if self.setup_needed
+      var setup_letters = [[7,4,7,1,7],[7,4,6,4,7],[7,2,2,2,2],[5,5,5,5,7],[7,5,7,4,4]]
+      self.draw_label(setup_letters,29,0xD9F4ED)
+    elif !online
+      self.draw_offline()
     end
   end
 end
