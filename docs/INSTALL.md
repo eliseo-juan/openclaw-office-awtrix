@@ -48,8 +48,8 @@ For unattended setup after authorizing pairing and the restart, add `--yes`. No 
 
 1. If the app is not installed yet, import [OpenClawOfficeLive.ax](../OpenClawOfficeLive.ax) once using AWTRIX's script editor.
 2. In the AWTRIX web UI, open **OpenClaw Office → Settings**.
-3. Set **Bridge URL** (`bridge_url`) to the URL printed by setup and save the app settings. This is a configuration field; no script changes are needed.
-4. Start the app. `show_in_rotation=true` includes it in automatic rotation. Other settings control bot style, palette, cafe movement and floor switching.
+3. Set **Bridge URL** (`bridge_url`) to the URL printed by setup and save the app settings.
+4. Start the app. `show_in_rotation=true` includes it in automatic rotation. Choose **Caffeine level**: **Decaf** for relaxed movement, **Coffee** for a balanced pace (default), or **Espresso** for more activity. Other settings control bot style, palette and floors.
 
 The bridge and clock must be on mutually reachable networks. Publishing the Gateway under HTTPS does not publish the bridge's separate HTTP port. No AWTRIX Hub listing has been submitted by this repository.
 

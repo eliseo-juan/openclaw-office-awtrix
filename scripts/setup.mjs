@@ -110,6 +110,6 @@ export async function runSetup(options = {}, dependencies = {}) {
   if (health?.status !== 'ready') throw new Error(`Bridge is not ready (${health?.status ?? 'unknown'}). Keep the configuration and rerun setup; do not reinstall or delete device identity.`);
   if (!await display(config, host)) throw new Error('Bridge health is ready but its display page is invalid or incomplete. Setup is not complete; rerun after synchronization.');
   const bridgeUrl = new URL(health.url).origin;
-  log(`Ready.\n\nIn AWTRIX, open OpenClaw Office > Settings.\nSet Bridge URL to: ${bridgeUrl}\nSave the app settings. No script changes are needed.`);
+  log(`Ready.\n\nIn AWTRIX, open OpenClaw Office > Settings.\nSet Bridge URL to: ${bridgeUrl}\nSave.`);
   return {configPath, bridgeUrl};
 }

@@ -14,7 +14,7 @@ openclaw office setup
 
 Confirm read-only device pairing if requested. Setup prepares private configuration, verifies authentication, enables the bridge and prints the URL to put in AWTRIX. It may restart the Gateway. Gateway credentials stay on the host.
 
-In AWTRIX, open **OpenClaw Office → Settings**, set **Bridge URL** to the printed URL and save. No script changes are needed. If the app is not installed yet, import [OpenClawOfficeLive.ax](OpenClawOfficeLive.ax) once first.
+In AWTRIX, open **OpenClaw Office → Settings**, set **Bridge URL** to the printed URL and save. If the app is not installed yet, import [OpenClawOfficeLive.ax](OpenClawOfficeLive.ax) once first.
 
 [Installation and troubleshooting](docs/INSTALL.md) · [Agent installation skill](skills/install-openclaw-office/SKILL.md)
 

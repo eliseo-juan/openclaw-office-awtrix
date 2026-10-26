@@ -4,6 +4,8 @@ const motions = new Map();
 let data = {connected: false, complete: false, agents: []}, page = 0, receivedAt = 0;
 const positions = new Map();
 let lastLayout;
+const caffeineSelect = document.querySelector('#caffeine-level');
+caffeineSelect.onchange = () => motions.clear();
 const styleSelect = document.querySelector('#bot-style');
 for (const style of botStyles) {
   const option = document.createElement('option'); option.value = style.name;
@@ -33,7 +35,7 @@ function draw() {
     const agent = data.agents[page*8+i], state = fresh ? agent.state : 'unknown';
     const key = `${page}:${agent.id}`;
     let pos = positions.get(key) ?? [seat.bot.x,seat.bot.y];
-    if (!motions.has(key)) motions.set(key,new CafeMotion());
+    if (!motions.has(key)) motions.set(key,new CafeMotion(undefined,{caffeine:caffeineSelect.value}));
     const peers=layout.seats.filter(s=>s.agentId!==agent.id).map(s=>positions.get(`${page}:${s.agentId}`)??[s.bot.x,s.bot.y]);
     const reserved=layout.seats.filter(s=>s.agentId!==agent.id).map(s=>motions.get(`${page}:${s.agentId}`)?.target).filter(Boolean);
     pos = motions.get(key).advance(pos,[seat.bot.x,seat.bot.y],state,layout.divider,Date.now(),{peers,reserved,desktops:layout.desktops});
@@ -72,4 +74,5 @@ async function refresh() {
 }
 document.querySelector('#previous').onclick = () => { page = Math.max(0,page-1); };
 document.querySelector('#next').onclick = () => { page++; };
-setInterval(draw,135); void refresh();
+function frame() { draw(); setTimeout(frame,caffeineProfiles[caffeineSelect.value].stepMs); }
+frame(); void refresh();

@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.3.0
+
+- Replace four movement controls with one Caffeine level setting: Decaf, Coffee (default), or Espresso. Levels adjust both cafe pauses and walking pace. Existing low-level movement values are no longer read.
+- Match caffeine presets in the browser preview. AWTRIX script version is 0.4.0.
+- Remove redundant script-editing commentary from setup success output.
+
 ## 0.2.4
 
 - Shorten setup messages and replace skipped step numbers with plain progress messages.

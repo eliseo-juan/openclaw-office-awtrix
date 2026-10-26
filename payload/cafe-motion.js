@@ -1,4 +1,5 @@
 (function(root) {
+  const caffeineProfiles = {Decaf:{pauseMin:20000,pauseMax:45000,stepMs:200},Coffee:{pauseMin:10000,pauseMax:25000,stepMs:135},Espresso:{pauseMin:4000,pauseMax:10000,stepMs:100}};
   const overlaps = (a,b) => a[0]<b[0]+b[2]&&a[0]+a[2]>b[0]&&a[1]<b[1]+b[3]&&a[1]+a[3]>b[1];
   function obstaclesFor(divider,desktops=[]) {
     return [[0,0,52,1],[0,15,52,1],[0,0,1,16],[51,0,1,6],[51,10,1,6],
@@ -30,7 +31,9 @@
     return [...position];
   }
   class CafeMotion {
-    constructor(seed=Math.floor(Math.random()*65521),{pauseMin=10000,pauseMax=25000,wander=true}={}) {
+    constructor(seed=Math.floor(Math.random()*65521),{caffeine='Coffee',pauseMin,pauseMax,wander=true}={}) {
+      const profile=caffeineProfiles[caffeine]??caffeineProfiles.Coffee;
+      pauseMin??=profile.pauseMin;pauseMax??=profile.pauseMax;
       this.seed=seed%65521;this.target=null;this.waitUntil=0;this.blocked=0;
       this.pauseMin=pauseMin;this.pauseMax=Math.max(pauseMin,pauseMax);this.wander=wander;
     }
@@ -82,6 +85,6 @@
       return next;
     }
   }
-  if(typeof module!=='undefined')module.exports={CafeMotion,stepToward,overlaps,obstaclesFor};
-  else {root.CafeMotion=CafeMotion;root.officeOverlaps=overlaps;}
+  if(typeof module!=='undefined')module.exports={CafeMotion,stepToward,overlaps,obstaclesFor,caffeineProfiles};
+  else {root.caffeineProfiles=caffeineProfiles;root.CafeMotion=CafeMotion;root.officeOverlaps=overlaps;}
 })(typeof globalThis!=='undefined'?globalThis:this);

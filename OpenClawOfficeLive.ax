@@ -1,7 +1,7 @@
 # @name OpenClaw Office
 # @desc A live pixel office for OpenClaw agents. Requires the OpenClaw Office bridge.
 # @author Eliseo Juan
-# @version 0.3.2
+# @version 0.4.0
 # @display 52x16
 # @config show_in_rotation bool "Show in rotation" default=true group="Display" help="Take automatic turns; off skips them while data keeps refreshing."
 # @config bot_style select "Bot style" default=Jelly group="Appearance" options=Capsule,Pebble,Diamond,Core,Spark,Crab,Manta,Saucer,Satellite,Chip,Circuit,Rune,Cursor,Wisp,Jelly,Orbit
@@ -10,10 +10,7 @@
 # @config stale_seconds number "Data timeout" default=15 min=5 max=300 unit=s group="Connection" help="Effective timeout is at least three refresh intervals."
 # @config palette select "Palette" default=Warm options=Warm,Clear group="Appearance"
 # @config show_status bool "Show connection indicator" default=true group="Appearance"
-# @config wander_enabled bool "Cafe wandering" default=true group="Movement"
-# @config cafe_pause_min number "Minimum cafe pause" default=10 min=5 max=600 unit=s group="Movement"
-# @config cafe_pause_max number "Maximum cafe pause" default=25 min=5 max=1800 unit=s group="Movement" help="Values below the minimum pause are raised to match it."
-# @config walk_ms number "Walking step interval" default=135 min=80 max=500 unit=ms group="Movement"
+# @config caffeine_level select "Caffeine level" default=Coffee options=Decaf,Coffee,Espresso group="Movement" help="Decaf: relaxed. Coffee: balanced. Espresso: lively."
 # @config start_floor number "Starting floor" default=1 min=1 max=1000 group="Floors"
 # @config auto_floor bool "Automatically change floor" default=false group="Floors"
 # @config floor_seconds number "Time per floor" default=20 min=5 max=300 unit=s group="Floors"
@@ -22,7 +19,7 @@ import json
 
 class OpenClawOfficeLive
   var seats, shell, positions, elapsed, moved, last, paused, theme
-  var refresh_seconds, stale_ms, wander_enabled, pause_min_ms, pause_max_ms, walk_ms, show_status
+  var refresh_seconds, stale_ms, pause_min_ms, pause_max_ms, walk_ms, show_status
   var auto_floor, floor_ms, floor_at, request_page
   var targets, waits, seeds, blocked, sprite_width, sprite_height, rooms
   var agents, divider, columns, page, pages, received, connected, ticks, pending
@@ -58,11 +55,11 @@ class OpenClawOfficeLive
     self.refresh_seconds = store.get("refresh_seconds", 3)
     self.stale_ms = store.get("stale_seconds", 15)*1000
     if self.stale_ms < self.refresh_seconds*3000 self.stale_ms = self.refresh_seconds*3000 end
-    self.wander_enabled = store.get("wander_enabled", true)
-    self.pause_min_ms = store.get("cafe_pause_min", 10)*1000
-    self.pause_max_ms = store.get("cafe_pause_max", 25)*1000
-    if self.pause_max_ms < self.pause_min_ms self.pause_max_ms = self.pause_min_ms end
-    self.walk_ms = store.get("walk_ms", 135)
+    var caffeine_profiles = {"Decaf":[20000,45000,200],"Coffee":[10000,25000,135],"Espresso":[4000,10000,100]}
+    var caffeine = caffeine_profiles.find(store.get("caffeine_level", "Coffee"), caffeine_profiles["Coffee"])
+    self.pause_min_ms = caffeine[0]
+    self.pause_max_ms = caffeine[1]
+    self.walk_ms = caffeine[2]
     self.show_status = store.get("show_status", true)
     self.auto_floor = store.get("auto_floor", false)
     self.floor_ms = store.get("floor_seconds", 20)*1000
@@ -310,7 +307,6 @@ class OpenClawOfficeLive
         end
         target = self.targets[i]
         if pos[0] == target[0] && pos[1] == target[1]
-          if !self.wander_enabled && !admitting continue end
           if admitting self.waits[i] = self.elapsed end
           if self.waits[i] == 0 self.waits[i] = self.elapsed + self.pause_min_ms + self.random(i,self.pause_max_ms-self.pause_min_ms+1) end
           if self.elapsed < self.waits[i] continue end
