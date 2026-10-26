@@ -4,6 +4,7 @@ import {homedir, networkInterfaces} from 'node:os';
 import {execFile} from 'node:child_process';
 import {promisify} from 'node:util';
 import {pairGateway} from './pair.mjs';
+import {localCredentials} from './credentials.mjs';
 import {diagnose, verifyDisplay} from './doctor.mjs';
 const execute = promisify(execFile);
 
@@ -72,8 +73,9 @@ export async function runSetup(options = {}, dependencies = {}) {
     const secret = async path => path ? (await readFile(path, 'utf8')).trim() : undefined;
     const sameLocalGateway = gateway.protocol === 'ws:' && ['localhost', '127.0.0.1', '[::1]'].includes(gateway.hostname) && Number(gateway.port || 80) === Number(hostConfig.gateway?.port ?? 18789);
     const auth = sameLocalGateway ? hostConfig.gateway?.auth ?? {} : {};
-    const token = await secret(options.tokenFile) ?? (sameLocalGateway ? process.env.OPENCLAW_GATEWAY_TOKEN : undefined) ?? (typeof auth.token === 'string' ? auth.token : undefined);
-    const password = await secret(options.passwordFile) ?? (sameLocalGateway ? process.env.OPENCLAW_GATEWAY_PASSWORD : undefined) ?? (typeof auth.password === 'string' ? auth.password : undefined);
+    const local = sameLocalGateway && !options.tokenFile && !options.passwordFile ? await (dependencies.credentials ?? localCredentials)(hostConfig) : {};
+    const token = await secret(options.tokenFile) ?? local.token;
+    const password = await secret(options.passwordFile) ?? local.password;
     if (!token && !password) throw new Error('No local bootstrap credential is available for this Gateway. Rerun with --token-file /private/path or --password-file /private/path; never paste credentials into chat. Existing identity was preserved.');
     const bootstrap = options.passwordFile || !options.tokenFile && auth.mode === 'password' ? {password} : token ? {token} : {password};
     if (!bootstrap.token && !bootstrap.password) throw new Error('The selected Gateway authentication mode has no usable credential; supply the matching private credential file.');

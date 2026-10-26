@@ -55,9 +55,9 @@ The bridge and clock must be on mutually reachable networks. Publishing the Gate
 
 ## If setup needs more information
 
-### Remote Gateway or a credential stored as a SecretRef
+### Remote Gateway or a custom credential provider
 
-Local automatic credential detection supports a plain configured Gateway token/password and the standard Gateway token/password environment variables inherited by the setup process. It does not resolve arbitrary SecretRef providers or read secrets from another OS user's files.
+Local automatic credential detection supports a configured token/password, standard Gateway environment variables, and built-in `store` or `env` SecretRefs through the official OpenClaw SDK. Run as the same OS user and with the same OpenClaw profile so its secure store is available. Setup does not resolve custom file/exec providers automatically or read another OS user's secrets.
 
 Provide a private file containing the bootstrap credential, never the token itself:
 

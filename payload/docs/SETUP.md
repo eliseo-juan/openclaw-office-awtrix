@@ -11,7 +11,7 @@ The bridge also supports manually authored configuration for advanced deployment
 | `{"mode":"token","tokenEnv":"OPENCLAW_GATEWAY_TOKEN"}` | Load a token from the specified environment variable. |
 | `{"mode":"password","passwordFile":"./gateway-password"}` | Bootstrap with a private password file; pairing may still be required. |
 
-For file/env secret sources use `tokenFile` / `passwordFile` or `tokenEnv` / `passwordEnv`. Interactive environment variables do not automatically reach a systemd service. Setup's supported SecretRef fallback is an explicit private file; it does not resolve arbitrary secret providers.
+For file/env secret sources use `tokenFile` / `passwordFile` or `tokenEnv` / `passwordEnv`. Interactive environment variables do not automatically reach a systemd service. Setup resolves built-in store/env SecretRefs with the official SDK. Custom file/exec providers require an explicit private credential file; setup does not decode or copy OpenClaw's secret store.
 
 A paired token belongs to the exact Gateway origin, role and device identity. Do not copy only the token, delete identity files as a retry strategy, or increase scopes to solve authentication. Setup requests `operator.read` and reconnects without bootstrap before considering authentication complete.
 

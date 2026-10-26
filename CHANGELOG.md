@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.2.1
+
+- Resolve built-in store/env Gateway SecretRefs through the official SDK during local setup, without printing or persisting bootstrap credentials.
+- Fail closed when a configured reference cannot resolve; do not silently borrow another credential.
+
 ## 0.2.0
 
 - Add `openclaw office setup` for local Gateway detection, private configuration, read-only device pairing, hook restrictions, plugin activation and health verification.
