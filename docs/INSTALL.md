@@ -87,7 +87,7 @@ Rerun `openclaw office setup`; it preserves the existing identity and verifies a
 | `office` is unknown | Update the plugin, accept the new CLI capability and enable it if it was left disabled. Use `openclaw office setup --help` to confirm discovery. |
 | No local bootstrap credential | Run as the Gateway OS user, or supply `--token-file` / `--password-file`. Never paste credentials into chat. |
 | Pairing awaits approval | Rerun interactively and approve the device created by this attempt. Do not approve unrelated devices. |
-| Read-only token not stored | Stop; setup has not verified authentication. Review Gateway version/policy without increasing the requested scopes. |
+| `READ_ONLY_TOKEN_NOT_STORED` on an older setup version | Update to 0.2.3 or newer and rerun setup. Earlier versions identified setup as a backend, allowing loopback authentication to skip persistent device pairing. Do not increase scopes or delete identity files. If it persists on the current version, setup has not verified authentication. |
 | Existing origin differs | Keep the existing identity. Use a separate `--config` for a different Gateway. |
 | `unreachable` | Check the reported listener address/port and process. A bridge bound to a specific LAN IP is not reachable through `127.0.0.1`. |
 | `gateway-disconnected` | HTTP is running but Gateway connectivity/authentication failed. Rerun setup; successful device pairing must precede service activation. |

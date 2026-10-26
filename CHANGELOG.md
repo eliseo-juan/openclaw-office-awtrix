@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.2.3
+
+- Identify the setup command as a CLI client so local Gateway authentication follows normal device pairing instead of the backend self-pairing shortcut, which can succeed without issuing a saved device token.
+- Reproduce the no-token backend behavior in the SDK regression fixture. Runtime bridge mode is unchanged.
+
 ## 0.2.2
 
 - Align the npm package name with the existing plugin ID, `openclaw-office`, to remove the installer naming warning. Repository URL, configuration keys and CLI commands are unchanged.

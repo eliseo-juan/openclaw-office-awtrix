@@ -20,7 +20,7 @@ export async function pairGateway(path, bootstrap = {}) {
       deviceToken: bootstrap.token || bootstrap.password ? undefined : saved?.token,
       preferBootstrapToken: Boolean(bootstrap.token || bootstrap.password),
       deviceIdentity: identity, hostDeps: store,
-      clientDisplayName: 'OpenClaw Office', clientVersion: '0.2.0', role: 'operator', scopes: ['operator.read'], caps: ['agent-kind'],
+      clientDisplayName: 'OpenClaw Office', clientVersion: '0.2.3', mode: 'cli', role: 'operator', scopes: ['operator.read'], caps: ['agent-kind'],
       minProtocol: PROTOCOL_VERSION, maxProtocol: PROTOCOL_VERSION, requestTimeoutMs: 10000,
       onHelloOk: hello => resolve({ok: true, scopes: hello.auth?.scopes ?? []}),
       onConnectError: error => {

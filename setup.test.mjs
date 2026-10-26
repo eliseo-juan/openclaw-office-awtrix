@@ -85,7 +85,7 @@ test('real SDK pairing saves a scoped device token and reconnects without bootst
       if (message.method !== 'connect') return;
       authSeen.push(message.params.auth);
       assert.deepEqual(message.params.scopes, ['operator.read']);
-      socket.send(JSON.stringify({type: 'res', id: message.id, ok: true, payload: {type: 'hello-ok', protocol: 4, server: {version: 'fixture', connId: 'fixture'}, features: {methods: [], events: []}, snapshot: {}, auth: {role: 'operator', scopes: ['operator.read'], deviceToken: 'paired-fixture-secret'}, policy: {tickIntervalMs: 30000}}}));
+      socket.send(JSON.stringify({type: 'res', id: message.id, ok: true, payload: {type: 'hello-ok', protocol: 4, server: {version: 'fixture', connId: 'fixture'}, features: {methods: [], events: []}, snapshot: {}, auth: {role: 'operator', scopes: ['operator.read'], ...(message.params.client.mode === 'cli' ? {deviceToken: 'paired-fixture-secret'} : {})}, policy: {tickIntervalMs: 30000}}}));
     });
   });
   try {
