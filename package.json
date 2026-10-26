@@ -1,6 +1,6 @@
 {
-  "name": "openclaw-office-plugin",
-  "version": "0.2.1",
+  "name": "openclaw-office",
+  "version": "0.2.2",
   "description": "OpenClaw-managed bridge for the AWTRIX OpenClaw Office display",
   "type": "module",
   "license": "MIT",

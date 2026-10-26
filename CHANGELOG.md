@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.2
+
+- Align the npm package name with the existing plugin ID, `openclaw-office`, to remove the installer naming warning. Repository URL, configuration keys and CLI commands are unchanged.
+
 ## 0.2.1
 
 - Resolve built-in store/env Gateway SecretRefs through the official SDK during local setup, without printing or persisting bootstrap credentials.
