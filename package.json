@@ -1,0 +1,35 @@
+{
+  "name": "openclaw-office-plugin",
+  "version": "0.1.0",
+  "description": "OpenClaw-managed bridge for the AWTRIX OpenClaw Office display",
+  "type": "module",
+  "license": "MIT",
+  "files": [
+    "index.mjs",
+    "service.mjs",
+    "openclaw.plugin.json",
+    "payload",
+    "README.md",
+    "LICENSE",
+    "OpenClawOfficeLive.ax"
+  ],
+  "scripts": {
+    "test": "node --test *.test.mjs payload/bridge/*.test.mjs"
+  },
+  "dependencies": {
+    "@openclaw/gateway-client": "2026.8.1",
+    "@openclaw/gateway-protocol": "2026.8.1"
+  },
+  "peerDependencies": {
+    "openclaw": ">=2026.9.2"
+  },
+  "openclaw": {
+    "extensions": [
+      "./index.mjs"
+    ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/eliseo-juan/openclaw-office.git"
+  }
+}

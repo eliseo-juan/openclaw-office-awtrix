@@ -1,0 +1,11 @@
+<!doctype html>
+<html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>OpenClaw Office — Live</title>
+<style>
+:root{color-scheme:dark;font:16px system-ui;background:#0b1018;color:#e7ecf5}body{max-width:1050px;margin:7vh auto;padding:24px}h1{font-size:36px;margin-bottom:8px}p{color:#a9b5c7}canvas{width:100%;image-rendering:pixelated;border:16px solid #202939;border-radius:12px;box-sizing:border-box;margin:26px 0;background:#000}select{padding:8px;background:#202b3e;color:inherit;border:1px solid #495a74;border-radius:8px}button{padding:10px 18px;border:1px solid #495a74;border-radius:8px;background:#202b3e;color:inherit}ul{list-style:none;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px}li{padding:14px;background:#151e2c;border-radius:8px}strong{display:block}small{color:#a9b5c7}#status{color:#72d8bd}
+</style>
+<h1>OpenClaw Office</h1><p>Live agent activity · 52 × 16 pixel office</p><div id="status" role="status">Connecting to bridge…</div>
+<label for="bot-style">Bot style</label> <select id="bot-style"></select>
+<canvas width="520" height="160" aria-label="Live office map"></canvas>
+<button id="previous">Previous floor</button> <span id="floor">Floor 1 / 1</span> <button id="next">Next floor</button>
+<ul id="agents"></ul><p>Working agents sit at their desks. Available agents visit the cafe. Gray means activity is unknown. Movement is decorative; it does not imply agent-to-agent communication.</p>
+<script src="/spike/layout.js"></script><script src="/bot-styles.js"></script><script src="/cafe-motion.js"></script><script src="/kitchen.js"></script><script src="/live.js"></script></html>
