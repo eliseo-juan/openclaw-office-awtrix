@@ -1,9 +1,9 @@
 # @name OpenClaw Office
 # @desc A live pixel office for OpenClaw agents. Requires the OpenClaw Office bridge.
 # @author Eliseo Juan
-# @version 0.5.0
+# @version 0.5.1
 # @display 52x16
-# @config show_in_rotation bool "Show in rotation" default=true group="Display" help="Take automatic turns; off skips them while data keeps refreshing."
+# @config always_on bool "Always on" default=false group="Display" help="Keep Office on screen. Turn off for normal app rotation."
 # @config bot_style select "Bot style" default=Jelly group="Appearance" options=Capsule,Pebble,Diamond,Core,Spark,Crab,Manta,Saucer,Satellite,Chip,Circuit,Rune,Cursor,Wisp,Jelly,Orbit
 # @config bridge_url text "Bridge URL" default="" group="Connection" help="Enter the Bridge URL printed by openclaw office setup."
 # @config refresh_seconds number "Refresh interval" default=3 min=1 max=60 unit=s group="Connection"
@@ -19,12 +19,13 @@ import json
 class OpenClawOfficeLive
   var seats, shell, positions, elapsed, moved, last, paused, theme
   var refresh_seconds, stale_ms, pause_min_ms, pause_max_ms, walk_ms
-  var auto_floor, floor_ms, floor_at, request_page, setup_needed
+  var auto_floor, floor_ms, floor_at, request_page, setup_needed, holding
   var targets, waits, seeds, blocked, sprite_width, sprite_height, rooms
   var agents, divider, columns, page, pages, received, connected, ticks, pending
   var floor_color, cafe_color, wall_color, wood_color, edge_color, plant_color, skin_color, active_color, off_color
 
   def init()
+    self.holding = self.holding == true
     self.rooms = {"19":[[2,1,2,3,8493990],[2,1,1,2,12110026],[3,2,1,1,14936024],[6,1,7,1,-1],[6,2,7,1,6843232],[6,3,7,1,-1],[6,1,2,2,2569534],[7,1,1,1,6936253],[7,2,1,1,14936024],[9,2,2,1,8493990],[10,1,1,1,12110026],[12,2,1,1,14936024],[9,9,3,1,-1],[10,9,1,1,14936024],[8,10,1,1,-2],[12,10,1,1,-2],[17,1,1,1,-3],[17,2,1,1,-1]],"26":[[2,1,2,3,8493990],[2,1,1,2,12110026],[3,2,1,1,14936024],[6,1,14,1,-1],[6,2,14,1,6843232],[6,3,14,1,-1],[6,1,2,2,2569534],[7,1,1,1,6936253],[7,2,1,1,14936024],[9,2,2,1,8493990],[10,1,1,1,12110026],[12,2,1,1,14936024],[16,1,3,2,8493990],[16,1,2,1,2569534],[9,9,3,1,-1],[10,9,1,1,14936024],[8,10,1,1,-2],[12,10,1,1,-2],[24,1,1,1,-3],[24,2,1,1,-1]],"33":[[2,1,2,3,8493990],[2,1,1,2,12110026],[3,2,1,1,14936024],[6,1,21,1,-1],[6,2,21,1,6843232],[6,3,21,1,-1],[6,1,2,2,2569534],[7,1,1,1,6936253],[7,2,1,1,14936024],[9,2,2,1,8493990],[10,1,1,1,12110026],[12,2,1,1,14936024],[23,1,3,2,8493990],[23,1,2,1,2569534],[9,9,3,1,-1],[10,9,1,1,14936024],[8,10,1,1,-2],[12,10,1,1,-2],[31,1,1,1,-3],[31,2,1,1,-1]]}
     self.seats = []
     self.agents = []
@@ -102,8 +103,29 @@ class OpenClawOfficeLive
     end
   end
 
-  def should_show()
-    return store.get("show_in_rotation", true)
+  def setup()
+    if store.get("always_on", false)
+      rotation.show()
+    elif store.get("office_rotation_held", false)
+      rotation.resume()
+      store.set("office_rotation_held", false)
+    end
+  end
+
+  def on_show()
+    if store.get("always_on", false)
+      rotation.pause()
+      self.holding = true
+      store.set("office_rotation_held", true)
+    end
+  end
+
+  def on_hide()
+    if self.holding
+      rotation.resume()
+      self.holding = false
+      store.set("office_rotation_held", false)
+    end
   end
 
   def needs_setup()

@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.4.1
+
+- Replace Show in rotation with Always on. Use AWTRIX rotation.show/pause to hold Office, and release its pause when leaving the app. Disabled uses normal rotation; manual navigation remains available.
+- AWTRIX script version is 0.5.1.
+
 ## 0.4.0
 
 - Show a clearly labeled setup preview with six example cafe bots when Bridge URL is empty or still the old placeholder. Configuring the URL switches to live data; configured outages remain OFFLINE.
