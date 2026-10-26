@@ -9,7 +9,7 @@ This repository is a native OpenClaw plugin. It manages the companion bridge pro
 With an OpenClaw version supporting Git plugin installation:
 
 ```sh
-openclaw plugins install git:github.com/eliseo-juan/openclaw-office
+openclaw plugins install git:github.com/eliseo-juan/openclaw-office-awtrix
 ```
 
 The plugin manifest and all runtime files are committed at the repository root; no build step is required. OpenClaw installs the pinned bridge dependencies. Git installation support varies by host version; local archive installation is also supported.
