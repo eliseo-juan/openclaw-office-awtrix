@@ -22,7 +22,9 @@ For changes to authentication, test failure and redaction paths. For display cha
 
 ## Pull requests
 
-`main` requires a pull request, resolved discussions and a passing `CI` check. Direct pushes, force pushes and deletion are blocked, including for administrators. No external approval is mandatory, so a sole maintainer can merge their own passing pull request. Merge with squash; merged branches are deleted automatically.
+`main` requires a pull request, resolved discussions and a passing `CI` check. Direct pushes, force pushes and deletion are blocked, including for administrators. Eliseo Juan (`@eliseo-juan`) is the sole code owner for every file, including CODEOWNERS itself. Contributor pull requests require one approving code-owner review; code changes dismiss stale approvals. Draft pull requests request code-owner review when marked ready, after CODEOWNERS is present on the base branch.
+
+GitHub does not allow self-approval. The repository administrator (currently only `@eliseo-juan`) may bypass the separate review rule through a pull request to review their own changes when merging. This exception does not bypass the independent main protection: CI, up-to-date branches, resolved discussions, blocked direct/force pushes and blocked deletion still apply. Merge with squash; merged branches are deleted automatically.
 
 Do not include credentials, device identities, private configuration, transcripts or personal hostnames. Use `example.com` and reserved documentation addresses in examples. See [Security](SECURITY.md) for private vulnerability reporting.
 

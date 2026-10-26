@@ -26,3 +26,9 @@ Reviewed on 26 October 2026:
 | [Official kitchen-sink](https://github.com/openclaw/kitchen-sink/blob/main/.github/workflows/check.yml) | Tests, runtime plugin inspector, package checks and report artifacts | Pinned official inspector with mock runtime capture, package checks and artifacts |
 
 Two other highly starred WeCom plugins inspected had no `.github/workflows` directory at review time. Popularity alone is not evidence of comprehensive CI. No release, deployment, registry-publishing or live-provider workflow was copied.
+
+## Owner review
+
+`.github/CODEOWNERS` assigns all files to `@eliseo-juan`. The independent `Owner review` ruleset requires one code-owner approval and dismisses stale reviews after code changes. CODEOWNERS must be merged to main before GitHub can use it for automatic review requests; drafts request review when marked ready.
+
+GitHub forbids approving your own PR. A PR-only administrator exception applies exclusively to the review ruleset. At configuration time, the sole administrator is `@eliseo-juan`. The separate `Protect main` ruleset has no bypass actors, so the exception cannot skip CI, PRs, resolved discussions, up-to-date branches or the restrictions on direct/force pushes and deletion. Granting someone else administrator access would also grant the review exception and should be reviewed deliberately.
