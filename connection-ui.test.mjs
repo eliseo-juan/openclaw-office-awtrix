@@ -36,3 +36,11 @@ test('all six setup bots fit in the cafe without overlapping each other or furni
   assert.deepEqual(JSON.parse(source.match(/self.positions = (\[\[3,4\][^\n]+)/)[1]),preview.positions);
   assert.deepEqual(JSON.parse(source.match(/var setup_letters = (\[[^\n]+\])/)[1]),preview.letters);
 });
+
+test('Bridge URL help includes the public setup guide for installs without prior instructions', async () => {
+  const source=await readFile(new URL('./OpenClawOfficeLive.ax',import.meta.url),'utf8');
+  const field=source.split('\n').find(line=>line.startsWith('# @config bridge_url '));
+  assert.match(field,/group="Connection"/);
+  assert.match(field,/https:\/\/github\.com\/eliseo-juan\/openclaw-office-awtrix\/blob\/main\/docs\/INSTALL\.md/);
+  assert.ok(field.match(/help="([^"]+)"/)[1].length<=95,'help must fit the clock field limit');
+});

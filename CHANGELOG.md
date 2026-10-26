@@ -1,5 +1,9 @@
 # Changelog
 
+## AWTRIX script 0.6.1
+
+- Add the setup guide URL to the Bridge URL help in Connection settings.
+
 ## 0.5.0
 
 - Use a centered 3×3 collision body independently of sprite width. Reserve separate cafe stops using 3×3 bodies; agents can cross each other while walking and return to their desks without waiting for other agents. Decorative sprite edges may overlap.

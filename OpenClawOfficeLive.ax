@@ -1,11 +1,11 @@
 # @name OpenClaw Office
 # @desc A live pixel office for OpenClaw agents. Requires the OpenClaw Office bridge.
 # @author Eliseo Juan
-# @version 0.6.0
+# @version 0.6.1
 # @display 52x16
 # @config always_on bool "Always on" default=false group="Display" help="Keep Office on screen. Turn off for normal app rotation."
 # @config bot_style select "Bot style" default=Jelly group="Appearance" options=Capsule,Pebble,Diamond,Core,Spark,Crab,Manta,Saucer,Satellite,Chip,Circuit,Rune,Cursor,Wisp,Jelly,Orbit
-# @config bridge_url text "Bridge URL" default="" group="Connection" help="Enter the Bridge URL printed by openclaw office setup."
+# @config bridge_url text "Bridge URL" default="" group="Connection" help="Setup: https://github.com/eliseo-juan/openclaw-office-awtrix/blob/main/docs/INSTALL.md"
 # @config refresh_seconds number "Refresh interval" default=3 min=1 max=60 unit=s group="Connection"
 # @config stale_seconds number "Data timeout" default=15 min=5 max=300 unit=s group="Connection" help="Effective timeout is at least three refresh intervals."
 # @config palette select "Palette" default=Warm options=Warm,Clear group="Appearance"
