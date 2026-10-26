@@ -24,7 +24,7 @@
     "plugin:check": "plugin-inspector ci --no-openclaw --runtime --mock-sdk --allow-execute"
   },
   "dependencies": {
-    "@openclaw/gateway-client": "2026.8.1",
+    "@openclaw/gateway-client": "2026.10.6",
     "@openclaw/gateway-protocol": "2026.8.1"
   },
   "peerDependencies": {
