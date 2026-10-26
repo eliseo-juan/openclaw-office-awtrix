@@ -34,7 +34,7 @@ Confirm preparation and, if requested, approval of the read-only Office device. 
 - Disables prompt/conversation hooks, enables the plugin and restarts the Gateway if the bridge is not already healthy.
 - Waits for HTTP connectivity and complete agent synchronization.
 
-The command prints `Ready` only when those checks pass, followed by your actual bridge URL. It does not configure the clock automatically. A Gateway restart briefly interrupts active connections; the initial confirmation covers that action.
+The command prints `Ready` only when those checks pass, followed by the exact Bridge URL to enter in the AWTRIX app settings. It does not configure the clock automatically. A Gateway restart briefly interrupts active connections; the initial confirmation covers that action.
 
 If the detected address is not reachable from the clock, select one:
 
@@ -46,10 +46,10 @@ For unattended setup after authorizing pairing and the restart, add `--yes`. No 
 
 ## 3. Add the AWTRIX app
 
-1. Open your clock's AWTRIX web UI and script editor.
-2. Paste [OpenClawOfficeLive.ax](../OpenClawOfficeLive.ax), save and open its settings.
-3. Set `bridge_url` to the URL printed by setup. Do not use the Gateway WSS URL or put a Gateway token on the clock.
-4. Start the script. `show_in_rotation=true` includes it in automatic rotation. Other settings control bot style, palette, cafe movement and floor switching.
+1. If the app is not installed yet, import [OpenClawOfficeLive.ax](../OpenClawOfficeLive.ax) once using AWTRIX's script editor.
+2. In the AWTRIX web UI, open **OpenClaw Office → Settings**.
+3. Set **Bridge URL** (`bridge_url`) to the URL printed by setup and save the app settings. This is a configuration field; no script changes are needed.
+4. Start the app. `show_in_rotation=true` includes it in automatic rotation. Other settings control bot style, palette, cafe movement and floor switching.
 
 The bridge and clock must be on mutually reachable networks. Publishing the Gateway under HTTPS does not publish the bridge's separate HTTP port. No AWTRIX Hub listing has been submitted by this repository.
 

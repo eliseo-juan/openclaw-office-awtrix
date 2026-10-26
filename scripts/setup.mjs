@@ -54,8 +54,8 @@ export async function runSetup(options = {}, dependencies = {}) {
   let gateway = new URL(gatewayUrl);
   if (gateway.username || gateway.password || gateway.search || gateway.hash || !(gateway.protocol === 'wss:' || gateway.protocol === 'ws:' && ['127.0.0.1', 'localhost', '[::1]'].includes(gateway.hostname))) throw new Error('Use WSS, or WS only on loopback; do not embed credentials in the URL.');
   if (config?.gateway?.url && config.gateway.url !== gatewayUrl) throw new Error('Existing Gateway origin differs; use a separate --config for another Gateway to preserve its device identity.');
-  if (!options.yes && !await confirm(`Prepare Office on ${host}:${port}, pair a read-only device, and restart the Gateway if needed?`)) throw new Error('Setup cancelled; no configuration changed.');
-  log('1/4 Preparing private configuration.');
+  if (!options.yes && !await confirm(`Set up Office at ${host}:${port}? The Gateway may restart.`)) throw new Error('Setup cancelled; no configuration changed.');
+  log('Configuring Office...');
   config ??= {gateway: {url: gatewayUrl, stateDirectory: './identity', auth: {mode: 'device'}}, display: {botStyle: 'Jelly'}};
   config.http = {...config.http, host, port};
   await privateJson(configPath, config);
@@ -69,7 +69,7 @@ export async function runSetup(options = {}, dependencies = {}) {
     result = await pair(configPath);
   }
   if (!result.ok) {
-    log('2/4 Pairing with the Gateway; credentials stay on this host.');
+    log('Connecting to OpenClaw...');
     const secret = async path => path ? (await readFile(path, 'utf8')).trim() : undefined;
     const sameLocalGateway = gateway.protocol === 'ws:' && ['localhost', '127.0.0.1', '[::1]'].includes(gateway.hostname) && Number(gateway.port || 80) === Number(hostConfig.gateway?.port ?? 18789);
     const auth = sameLocalGateway ? hostConfig.gateway?.auth ?? {} : {};
@@ -91,7 +91,7 @@ export async function runSetup(options = {}, dependencies = {}) {
   await privateJson(configPath, config);
   result = await pair(configPath);
   if (!result.ok || result.source !== 'paired-device') throw new Error('Paired-device verification failed. Device files were preserved; setup has not activated the bridge.');
-  log('3/4 Enabling the plugin with prompt and conversation hooks denied.');
+  log('Enabling Office...');
   const entry = 'plugins.entries.openclaw-office';
   await command(['config', 'set', `${entry}.hooks`, '{"allowPromptInjection":false,"allowConversationAccess":false}', '--strict-json']);
   await command(['config', 'set', `${entry}.config.configPath`, configPath]);
@@ -100,7 +100,7 @@ export async function runSetup(options = {}, dependencies = {}) {
   if (before.status !== 'ready') {
     await command(['gateway', 'restart']);
   }
-  log('4/4 Waiting for the bridge and complete agent synchronization.');
+  log('Checking connection...');
   let health;
   for (let attempt = 0; attempt < 20; attempt++) {
     health = await check(config, host);
@@ -110,7 +110,6 @@ export async function runSetup(options = {}, dependencies = {}) {
   if (health?.status !== 'ready') throw new Error(`Bridge is not ready (${health?.status ?? 'unknown'}). Keep the configuration and rerun setup; do not reinstall or delete device identity.`);
   if (!await display(config, host)) throw new Error('Bridge health is ready but its display page is invalid or incomplete. Setup is not complete; rerun after synchronization.');
   const bridgeUrl = new URL(health.url).origin;
-  log(`Ready. Set AWTRIX bridge_url to ${bridgeUrl}`);
-  log('Paste OpenClawOfficeLive.ax into the AWTRIX script editor. No Gateway token belongs on the clock.');
+  log(`Ready.\n\nIn AWTRIX, open OpenClaw Office > Settings.\nSet Bridge URL to: ${bridgeUrl}\nSave the app settings. No script changes are needed.`);
   return {configPath, bridgeUrl};
 }

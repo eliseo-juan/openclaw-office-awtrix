@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.2.4
+
+- Shorten setup messages and replace skipped step numbers with plain progress messages.
+- Direct users to the AWTRIX app settings and the Bridge URL field; URL configuration does not require editing the script.
+
 ## 0.2.3
 
 - Identify the setup command as a CLI client so local Gateway authentication follows normal device pairing instead of the backend self-pairing shortcut, which can succeed without issuing a saved device token.
