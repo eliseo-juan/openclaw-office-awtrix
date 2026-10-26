@@ -7,8 +7,8 @@ if(mode==='film')document.body.classList.add('film');
 const canvas=document.querySelector('canvas'),ctx=canvas.getContext('2d');
 const pixels=document.createElement('canvas');pixels.width=52;pixels.height=16;
 const px=pixels.getContext('2d',{willReadFrequently:true});
-const {scenes,agentsFor}=officeShowcase;
-let scene,agents,positions,motions,page=0,time=0,last=0,elapsed=0,lastStep=0,chapter='',cue='',lastDraw=0,started=performance.now();
+const {scenes,agentsFor,filmShots,filmDuration,coverDuration,filmShotAt}=officeShowcase;
+let scene,agents,positions,motions,page=0,time=0,last=0,elapsed=0,lastStep=0,chapter='',cue='',shotId=-1,lastDraw=0,started=performance.now();
 function configure(name){
   scene=scenes[name];agents=agentsFor(scene);page=0;positions=new Map();motions=new Map();time=0;lastStep=0;
   document.body.classList.toggle('styles',name==='styles');
@@ -87,40 +87,47 @@ function stylesGrid(){
   });document.querySelector('main').append(grid);
 }
 function tick(stamp){
-  elapsed=stamp-started;
+  elapsed=Math.max(0,stamp-started);
   if(mode==='film'){
-    const t=elapsed%36000;
-    const next=t<11000?'crew':t<16000?'small':t<22000?'busy':t<28000?'fleet':'crew';
-    const shot=t<2200?'Meet your crew.':t<6500?'Back to work.':t<11000?'Coffee break.':t<16000?'Start small.':t<22000?'Room for eight.':t<28000?'Keep growing.':t<33000?'Make it yours.':'OpenClaw Office.';
-    if(next!==chapter){
-      const old=document.createElement('canvas');old.width=canvas.width;old.height=canvas.height;old.getContext('2d').drawImage(canvas,0,0);
-      old.style.cssText='position:absolute;top:11px;left:29px;pointer-events:none';canvas.parentElement.append(old);
-      old.animate([{opacity:1},{opacity:0}],{duration:350,easing:'ease-out'}).finished.then(()=>old.remove());
-      configure(next);chapter=next;last=stamp;time=0;
-      document.querySelector('.device-wrap').animate([{transform:t<1000?'scale(1.12) translateY(12px)':'scale(.98) translateY(7px)'},{transform:'scale(1) translateY(0)'}],{duration:t<1000?2300:1800,easing:'cubic-bezier(.2,.8,.2,1)',fill:'forwards'});
-    }
-    if(next==='fleet')page=t>=25000?1:0;
-    if(t>=28000)scene={...scene,style:t<29250?'Wisp':t<30500?'Circuit':t<31750?'Orbit':'Jelly'};
-    if(shot!==cue){
-      cue=shot;document.querySelector('h1').textContent=shot;
-      document.querySelector('h1').animate([{opacity:0,transform:'translateY(12px)',filter:'blur(4px)'},{opacity:1,transform:'translateY(0)',filter:'blur(0)'}],{duration:650,easing:'cubic-bezier(.2,.8,.2,1)',fill:'both'});
+    const t=elapsed%filmDuration,shot=filmShotAt(t);
+    if(shot.at!==shotId){
+      if(shot.scene!==chapter||shot.at===0){
+        const old=document.createElement('canvas');old.width=canvas.width;old.height=canvas.height;old.getContext('2d').drawImage(canvas,0,0);
+        old.style.cssText='position:absolute;top:11px;left:29px;pointer-events:none';canvas.parentElement.append(old);
+        old.animate([{opacity:1},{opacity:0}],{duration:300,easing:'ease-out'}).finished.then(()=>old.remove());
+        configure(shot.scene);chapter=shot.scene;last=stamp;time=0;
+      }
+      page=shot.page??page;
+      if(shot.style)scene={...scene,style:shot.style};
+      for(const [index,state] of shot.states??[])agents[index].state=state;
+      const wrap=document.querySelector('.device-wrap');
+      const from=getComputedStyle(wrap).transform;
+      for(const animation of wrap.getAnimations())animation.cancel();
+      wrap.style.transform=from;
+      const [scale,x,y]=shot.camera;
+      const next=filmShots[filmShots.indexOf(shot)+1]?.at??filmDuration;
+      wrap.animate([{transform:from},{transform:`translate(${x}px,${y}px) scale(${scale})`}],{duration:next-shot.at,easing:'ease-in-out',fill:'forwards'});
+      if(shot.title!==cue){
+        cue=shot.title;document.querySelector('h1').textContent=shot.title;
+        document.querySelector('h1').animate([{opacity:0,transform:'translateY(10px)',filter:'blur(3px)'},{opacity:1,transform:'translateY(0)',filter:'blur(0)'}],{duration:400,easing:'ease-out',fill:'both'});
+      }
+      shotId=shot.at;
     }
   }
-  if(mode==='cover'&&elapsed>=14000){configure('crew');started=stamp;elapsed=0;last=stamp;time=0;}
-  if(mode==='cover')scene={...scene,style:elapsed<3500?'Jelly':elapsed<7000?'Orbit':elapsed<10500?'Wisp':'Circuit'};
-  if(last)time+=Math.min(stamp-last,250);last=stamp;
-  const activeCrew=(mode==='cover'||(mode==='film'&&chapter==='crew'));
-  if(activeCrew){
-    if(time>2200)agents[2].state='working';
-    if(time>6500)agents[4].state='idle';
-    document.querySelector('#activity').textContent=time>2200&&time<6500?'Researcher · Back to the desk':time>6500?'Writer · Taking a coffee break':'Builder · Implementing the settings panel';
+  if(mode==='cover'&&elapsed>=coverDuration){configure('crew');started=stamp;elapsed=0;last=stamp;time=0;}
+  if(mode==='cover'){
+    scene={...scene,style:elapsed<2500?'Jelly':elapsed<5000?'Orbit':elapsed<7500?'Wisp':'Circuit'};
+    if(elapsed>800)agents[2].state='working';
+    if(elapsed>2800)agents[4].state='idle';
+    if(elapsed>5000)agents[5].state='working';
+    if(elapsed>7300)agents[1].state='idle';
   }
+  if(last)time+=Math.min(stamp-last,250)*(['film','cover'].includes(mode)?2:1);last=stamp;
   if(time-lastStep>=caffeineProfiles[scene.caffeine].stepMs){
     for(let floor=0;floor<Math.ceil(agents.length/8);floor++)advanceFloor(floor,20000+time);
     lastStep=time;
   }
   if(stamp-lastDraw>=90){drawMap();lastDraw=stamp;}
-  if(activeCrew&&time>2200)document.querySelector('#activity').textContent=time<6500?'Researcher · Back to the desk':'Writer · Taking a coffee break';
   requestAnimationFrame(tick);
 }
 configure(['film','cover'].includes(mode)?'crew':scenes[mode]?mode:'crew');

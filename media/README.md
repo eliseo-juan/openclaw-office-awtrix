@@ -6,10 +6,10 @@ Original promotional artwork and browser recordings for OpenClaw Office on AWTRI
 
 | File | Use |
 | --- | --- |
-| [hub-cover.gif](assets/hub-cover.gif) | Animated cover for the Hub; 960 × 540, 14 seconds, looping |
+| [hub-cover.gif](assets/hub-cover.gif) | Animated cover for the Hub; 960 × 540, 10 seconds, looping |
 | [hub-cover.png](assets/hub-cover.png) | Static cover; 1600 × 900 |
-| [cover-loop.mp4](assets/cover-loop.mp4) | Compact animated cover; 1600 × 900, 14 seconds |
-| [showcase.mp4](assets/showcase.mp4) | Product film; 1600 × 900, 36 seconds |
+| [cover-loop.mp4](assets/cover-loop.mp4) | Compact animated cover; 1600 × 900, 10 seconds |
+| [showcase.mp4](assets/showcase.mp4) | Product film; 1600 × 900, 24 seconds |
 | [01-hero.png](assets/01-hero.png) | Six Jelly bots: four working, two in the cafe |
 | [02-small-team.png](assets/02-small-team.png) | Three Wisp bots, Decaf movement |
 | [03-full-house.png](assets/03-full-house.png) | Eight Circuit bots, Espresso movement |
@@ -21,7 +21,7 @@ The six gallery images are 1600 × 1000. Videos are silent H.264 MP4 files with 
 
 ## Story
 
-The film starts with six agents. Researcher returns from the cafe when work starts; Writer takes a break after finishing a task. The film then shows a three-agent team, a full eight-agent office, a twelve-agent team across two floors, and several bot styles. Short animated captions and subtle camera moves keep the display as the focus. All agents switch styles together in the customization sequence (Wisp, Circuit, Orbit and Jelly), matching the app’s office-wide style setting. Most agents are working in every scene. Changes in activity are illustrative, not real OpenClaw events.
+The film starts with six agents. Researcher returns from the cafe when work starts; Writer takes a break after finishing a task. The film then shows a three-agent team, a full eight-agent office, a twelve-agent team across two floors, and several bot styles. Short animated captions and continuous camera moves keep the display as the focus. Every shot introduces an activity change, a team size, a floor or a bot style within three seconds. Film and cover movement run at 2× speed for presentation; the app’s timing is unchanged. All agents switch styles together in the customization sequence (Wisp, Circuit, Orbit and Jelly), matching the app’s office-wide style setting. Most agents are working in every scene. Changes in activity are illustrative, not real OpenClaw events.
 
 The demo reuses the production browser layout, kitchen, bot sprites, caffeine profiles and movement code. Its custom renderer adds an LED effect and a stylized clock enclosure. Idle motion remains decorative and does not imply conversations between agents. The media does not demonstrate secure pairing or the installation process.
 
@@ -35,8 +35,8 @@ python3 -m http.server 8801 --bind 127.0.0.1
 
 Open <http://127.0.0.1:8801/media/>. Buttons select a scene or play the film. Capture modes:
 
-- `?scene=film&capture=1`: 36-second film, repeating.
-- `?scene=cover&capture=1`: 14-second cover, repeating.
+- `?scene=film&capture=1`: 24-second film, repeating.
+- `?scene=cover&capture=1`: 10-second cover, repeating.
 - `?scene=crew&capture=1&still=1`: deterministic six-agent still.
 - `?scene=small&capture=1&still=1`: three-agent still.
 - `?scene=busy&capture=1&still=1`: eight-agent still.

@@ -43,3 +43,25 @@ test('every showcase scenario settles all idle agents in the cafe away from furn
     }
   }
 });
+
+test('film changes the whole-office configuration or activity at least every three seconds',()=>{
+  const {filmShots,filmDuration,filmShotAt}=globalThis.officeShowcase;
+  let agents,previousScene,style;
+  const demonstrated=new Set();
+  for(let i=0;i<filmShots.length;i++){
+    const shot=filmShots[i];
+    assert.equal(filmShotAt(shot.at),shot);
+    const next=filmShots[i+1]?.at??filmDuration;
+    assert.ok(next-shot.at<=3000,'no long hold without a new shot');
+    if(shot.scene!==previousScene){agents=agentsFor(scenes[shot.scene]);style=scenes[shot.scene].style;previousScene=shot.scene;}
+    if(shot.style)style=shot.style;
+    demonstrated.add(style);
+    for(const [index,state] of shot.states??[])agents[index].state=state;
+    assert.ok(agents.filter(a=>a.state==='working').length>agents.length/2,'most agents keep working');
+    assert.ok(styles.some(s=>s.name===style),'one supported style for the whole office');
+    assert.ok((shot.page??0)<Math.ceil(agents.length/8));
+  }
+  assert.deepEqual([...demonstrated].sort(),['Circuit','Jelly','Orbit','Wisp']);
+  assert.equal(filmShotAt(filmDuration),filmShots[0]);
+  assert.equal(filmShotAt(-16),filmShots[0],'the first animation timestamp can precede script startup');
+});

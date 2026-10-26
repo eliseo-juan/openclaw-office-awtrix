@@ -33,15 +33,16 @@ browser screenshot "$output/05-second-floor.png"
 browser set viewport 1600 900
 browser open "$base?scene=film&capture=1&still=1"
 browser record start "$tmp_dir/showcase.mp4" "$base?scene=film&capture=1" --fps 30
-sleep 36
+browser wait --fn 'document.querySelector("h1").textContent === "Meet your crew."'
+sleep 24
 browser record stop
-ffmpeg -hide_banner -loglevel error -y -i "$tmp_dir/showcase.mp4" -t 36 -vf 'fps=30' -c:v libx264 -preset slow -crf 19 -pix_fmt yuv420p -movflags +faststart -an "$output/showcase.mp4"
+ffmpeg -hide_banner -loglevel error -y -i "$tmp_dir/showcase.mp4" -t 24 -vf 'fps=30' -c:v libx264 -preset slow -crf 19 -pix_fmt yuv420p -movflags +faststart -an "$output/showcase.mp4"
 browser set viewport 1600 900
 browser open "$base?scene=cover&capture=1&still=1"
 browser screenshot "$output/hub-cover.png"
 browser record start "$tmp_dir/cover.mp4" "$base?scene=cover&capture=1" --fps 30
-sleep 14
+sleep 10
 browser record stop
-ffmpeg -hide_banner -loglevel error -y -i "$tmp_dir/cover.mp4" -t 14 -vf 'fps=30' -c:v libx264 -preset slow -crf 19 -pix_fmt yuv420p -movflags +faststart -an "$output/cover-loop.mp4"
+ffmpeg -hide_banner -loglevel error -y -i "$tmp_dir/cover.mp4" -t 10 -vf 'fps=30' -c:v libx264 -preset slow -crf 19 -pix_fmt yuv420p -movflags +faststart -an "$output/cover-loop.mp4"
 ffmpeg -hide_banner -loglevel error -y -i "$output/cover-loop.mp4" -filter_complex '[0:v]fps=10,scale=960:-1:flags=lanczos,split[a][b];[a]palettegen=stats_mode=diff[p];[b][p]paletteuse=dither=sierra2_4a:diff_mode=rectangle' -loop 0 "$output/hub-cover.gif"
 printf 'Media saved to %s\n' "$output"
