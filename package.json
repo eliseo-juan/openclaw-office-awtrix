@@ -1,6 +1,6 @@
 {
   "name": "openclaw-office",
-  "version": "0.4.1",
+  "version": "0.5.0",
   "description": "OpenClaw-managed bridge for the AWTRIX OpenClaw Office display",
   "type": "module",
   "license": "MIT",

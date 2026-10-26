@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.5.0
+
+- Use a centered 3×3 collision body independently of sprite width. Reserve separate cafe stops using 3×3 bodies; agents can cross each other while walking and return to their desks without waiting for other agents. Decorative sprite edges may overlap.
+- Reduce the kitchenette to a uniform two-pixel counter with compact appliances, and replace the small table/stools with a centered solid 7×2 table.
+- Keep native and browser furniture/collision geometry aligned. AWTRIX script version is 0.6.0.
+
 ## 0.4.1
 
 - Replace Show in rotation with Always on. Use AWTRIX rotation.show/pause to hold Office, and release its pause when leaving the app. Disabled uses normal rotation; manual navigation remains available.

@@ -12,7 +12,7 @@ test('caffeine levels produce increasingly active cafe motion with identical see
     for (let time=0;time<180000;time+=profile.stepMs) {
       const next=motion.advance(position,[40,5],'idle',26,time);
       if (next.join(',')!==position.join(',')) moved++;
-      assert.ok(next[0]+4<26,'idle motion stays in cafe');
+      assert.ok(next[0]+3<26,'idle motion stays in cafe');
       position=next;
     }
     steps[caffeine]=moved;

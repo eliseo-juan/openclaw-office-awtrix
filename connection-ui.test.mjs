@@ -33,6 +33,6 @@ test('all six setup bots fit in the cafe without overlapping each other or furni
   }
   assert.ok(preview.x>preview.divider && preview.x+preview.letters.length*4-1<51);
   const source=await readFile(new URL('./OpenClawOfficeLive.ax',import.meta.url),'utf8');
-  assert.deepEqual(JSON.parse(source.match(/self.positions = (\[\[3,5\][^\n]+)/)[1]),preview.positions);
+  assert.deepEqual(JSON.parse(source.match(/self.positions = (\[\[3,4\][^\n]+)/)[1]),preview.positions);
   assert.deepEqual(JSON.parse(source.match(/var setup_letters = (\[[^\n]+\])/)[1]),preview.letters);
 });

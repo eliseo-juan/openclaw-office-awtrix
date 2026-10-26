@@ -1,7 +1,7 @@
 # @name OpenClaw Office
 # @desc A live pixel office for OpenClaw agents. Requires the OpenClaw Office bridge.
 # @author Eliseo Juan
-# @version 0.5.1
+# @version 0.6.0
 # @display 52x16
 # @config always_on bool "Always on" default=false group="Display" help="Keep Office on screen. Turn off for normal app rotation."
 # @config bot_style select "Bot style" default=Jelly group="Appearance" options=Capsule,Pebble,Diamond,Core,Spark,Crab,Manta,Saucer,Satellite,Chip,Circuit,Rune,Cursor,Wisp,Jelly,Orbit
@@ -26,7 +26,7 @@ class OpenClawOfficeLive
 
   def init()
     self.holding = self.holding == true
-    self.rooms = {"19":[[2,1,2,3,8493990],[2,1,1,2,12110026],[3,2,1,1,14936024],[6,1,7,1,-1],[6,2,7,1,6843232],[6,3,7,1,-1],[6,1,2,2,2569534],[7,1,1,1,6936253],[7,2,1,1,14936024],[9,2,2,1,8493990],[10,1,1,1,12110026],[12,2,1,1,14936024],[9,9,3,1,-1],[10,9,1,1,14936024],[8,10,1,1,-2],[12,10,1,1,-2],[17,1,1,1,-3],[17,2,1,1,-1]],"26":[[2,1,2,3,8493990],[2,1,1,2,12110026],[3,2,1,1,14936024],[6,1,14,1,-1],[6,2,14,1,6843232],[6,3,14,1,-1],[6,1,2,2,2569534],[7,1,1,1,6936253],[7,2,1,1,14936024],[9,2,2,1,8493990],[10,1,1,1,12110026],[12,2,1,1,14936024],[16,1,3,2,8493990],[16,1,2,1,2569534],[9,9,3,1,-1],[10,9,1,1,14936024],[8,10,1,1,-2],[12,10,1,1,-2],[24,1,1,1,-3],[24,2,1,1,-1]],"33":[[2,1,2,3,8493990],[2,1,1,2,12110026],[3,2,1,1,14936024],[6,1,21,1,-1],[6,2,21,1,6843232],[6,3,21,1,-1],[6,1,2,2,2569534],[7,1,1,1,6936253],[7,2,1,1,14936024],[9,2,2,1,8493990],[10,1,1,1,12110026],[12,2,1,1,14936024],[23,1,3,2,8493990],[23,1,2,1,2569534],[9,9,3,1,-1],[10,9,1,1,14936024],[8,10,1,1,-2],[12,10,1,1,-2],[31,1,1,1,-3],[31,2,1,1,-1]]}
+    self.rooms = {"19":[[2,1,15,2,-1],[2,2,15,1,-2],[2,1,2,2,8493990],[3,1,1,1,12110026],[6,1,2,2,2569534],[7,1,1,1,14936024],[10,1,2,1,8493990],[16,1,1,1,-3],[16,2,1,1,-2],[6,7,7,2,-1]],"26":[[2,1,22,2,-1],[2,2,22,1,-2],[2,1,2,2,8493990],[3,1,1,1,12110026],[6,1,2,2,2569534],[7,1,1,1,14936024],[10,1,2,1,8493990],[18,1,3,1,8493990],[18,1,2,1,2569534],[23,1,1,1,-3],[23,2,1,1,-2],[9,7,7,2,-1]],"33":[[2,1,29,2,-1],[2,2,29,1,-2],[2,1,2,2,8493990],[3,1,1,1,12110026],[6,1,2,2,2569534],[7,1,1,1,14936024],[10,1,2,1,8493990],[25,1,3,1,8493990],[25,1,2,1,2569534],[30,1,1,1,-3],[30,2,1,1,-2],[13,7,7,2,-1]]}
     self.seats = []
     self.agents = []
     self.divider = 33
@@ -75,7 +75,7 @@ class OpenClawOfficeLive
         rows.push({"id":"setup-"+str(i),"state":"idle","x":32+(i%3)*7,"y":i<3 ? 4 : 9,"color":colors[i]})
       end
       self.receive(json.dump({"schema":1,"connected":false,"divider":26,"page":0,"pages":1,"agents":rows}),200)
-      self.positions = [[3,5],[9,5],[15,5],[21,5],[3,11],[16,11]]
+      self.positions = [[3,4],[9,4],[15,4],[21,4],[3,11],[16,11]]
     end
   end
 
@@ -239,22 +239,23 @@ class OpenClawOfficeLive
   end
 
   def overlap(a, b)
-    return a[0]-1 < b[0]+4 && a[0]+4 > b[0]-1 && a[1] < b[1]+3 && a[1]+3 > b[1]
+    return a[0] < b[0]+3 && a[0]+3 > b[0] && a[1] < b[1]+3 && a[1]+3 > b[1]
   end
 
   def free(i, p, reserve)
-    var x = p[0]-1
+    var x = p[0]
     var y = p[1]
-    if x < 1 || x+5 > 51 || y < 1 || y+3 > 15 return false end
-    if x <= self.divider && x+5 > self.divider && (y < 6 || y > 7) return false end
-    if x < self.divider && x+5 > 2 && y < 4 return false end
-    if x < 13 && x+5 > 8 && y < 11 && y+3 > 9 return false end
+    if x < 2 || x+4 > 51 || y < 1 || y+3 > 15 return false end
+    if x <= self.divider && x+3 > self.divider && (y < 6 || y > 7) return false end
+    if x < self.divider-2 && x+3 > 2 && y < 3 return false end
+    var table_x = (self.divider-7)/2
+    if x < table_x+7 && x+3 > table_x && y < 9 && y+3 > 7 return false end
     var desk = self.seats[0][0]-3
-    if x+5 > desk && (y < 4 || (size(self.agents) > self.columns && y+3 > 12)) return false end
+    if x+3 > desk && (y < 4 || (size(self.agents) > self.columns && y+3 > 12)) return false end
     for j : 0 .. size(self.agents)-1
-      if j != i
+      if reserve && j != i
         if self.overlap(p,self.positions[j]) return false end
-        if reserve && self.targets[j] != nil && self.overlap(p,self.targets[j]) return false end
+        if self.targets[j] != nil && self.overlap(p,self.targets[j]) return false end
       end
     end
     return true
@@ -264,7 +265,7 @@ class OpenClawOfficeLive
     var pos = self.positions[i]
     if pos[0] == target[0] && pos[1] == target[1] return pos end
     if !self.free(i,target,false) return pos end
-    var cafe_only = self.state_for(i) == 0 && pos[0]+3 < self.divider
+    var cafe_only = self.state_for(i) == 0 && pos[0]+2 < self.divider
     var start = pos[1]*52+pos[0]
     var goal = target[1]*52+target[0]
     var queue = [start]
@@ -277,7 +278,7 @@ class OpenClawOfficeLive
       for delta : [[1,-1],[1,1],[-1,1],[-1,-1],[0,-1],[1,0],[0,1],[-1,0]]
         var next = [current%52+delta[0],current/52+delta[1]]
         var key = next[1]*52+next[0]
-        if parents.find(key) != nil || (cafe_only && next[0]+3 >= self.divider) || !self.free(i,next,false) continue end
+        if parents.find(key) != nil || (cafe_only && next[0]+2 >= self.divider) || !self.free(i,next,false) continue end
         if delta[0] != 0 && delta[1] != 0
           if !self.free(i,[next[0],current/52],false) || !self.free(i,[current%52,next[1]],false) continue end
         end
@@ -292,15 +293,6 @@ class OpenClawOfficeLive
     return pos
   end
 
-  def nudge(i, pos)
-    var choices = []
-    for delta : [[0,-1],[1,0],[0,1],[-1,0]]
-      var point = [pos[0]+delta[0],pos[1]+delta[1]]
-      if point[0]+3 < self.divider && self.free(i,point,false) choices.push(point) end
-    end
-    return choices
-  end
-
   def advance()
     var stamp = now_ms()
     if !self.paused self.elapsed += stamp - self.last end
@@ -313,41 +305,35 @@ class OpenClawOfficeLive
       if state == 4 continue end
       var pos = self.positions[i]
       var target = self.seats[i]
-      if state == 0 && pos[0]+3 >= self.divider
+      if state == 0 && pos[0]+2 >= self.divider
         self.targets[i] = [self.divider-4,7]
         self.waits[i] = 0
         self.positions[i] = self.walk_step(i,self.targets[i])
         continue
       end
       if state == 0
-        var admitting = false
-        for j : 0 .. size(self.agents)-1
-          if j != i && self.targets[j] != nil && self.targets[j][0] == self.divider-4 && self.targets[j][1] == 7 admitting = true end
-        end
         if self.targets[i] != nil && self.targets[i][0] == self.divider-4 && self.targets[i][1] == 7
           self.targets[i] = nil
           self.waits[i] = 0
         end
         var points = []
-        for y : 4 .. 12
-          for x : 2 .. self.divider-4
-            if x+4 > self.divider-6 && y < 10 && y+3 > 7 continue end
+        for y : 3 .. 12
+          for x : 2 .. self.divider-3
+            if x+3 > self.divider-4 && y < 10 && y+3 > 7 continue end
             points.push([x,y])
           end
         end
-        if self.targets[i] == nil || self.targets[i][0]+3 >= self.divider
+        if self.targets[i] == nil || self.targets[i][0]+2 >= self.divider
           var options = []
           for point : points
             if self.free(i,point,true) && (point[0] != pos[0] || point[1] != pos[1]) options.push(point) end
           end
-          if size(options) == 0 && admitting options = self.nudge(i,pos) end
           if size(options) == 0 continue end
           self.targets[i] = options[self.random(i,size(options))]
           self.waits[i] = 0
         end
         target = self.targets[i]
         if pos[0] == target[0] && pos[1] == target[1]
-          if admitting self.waits[i] = self.elapsed end
           if self.waits[i] == 0 self.waits[i] = self.elapsed + self.pause_min_ms + self.random(i,self.pause_max_ms-self.pause_min_ms+1) end
           if self.elapsed < self.waits[i] continue end
           var candidates = []
@@ -356,7 +342,6 @@ class OpenClawOfficeLive
             var dy = point[1] > pos[1] ? point[1]-pos[1] : pos[1]-point[1]
             if (dx != 0 || dy != 0) && dx+dy <= 10 && self.free(i,point,true) candidates.push(point) end
           end
-          if size(candidates) == 0 && admitting candidates = self.nudge(i,pos) end
           if size(candidates) == 0 continue end
           target = candidates[self.random(i,size(candidates))]
           self.targets[i] = target

@@ -13,7 +13,7 @@
   }
   const setupLetters = [[7,4,7,1,7],[7,4,6,4,7],[7,2,2,2,2],[5,5,5,5,7],[7,5,7,4,4]];
   function setupPreview() {
-    return {divider:26,positions:[[3,5],[9,5],[15,5],[21,5],[3,11],[16,11]],letters:setupLetters,x:29};
+    return {divider:26,positions:[[3,4],[9,4],[15,4],[21,4],[3,11],[16,11]],letters:setupLetters,x:29};
   }
   const api={connectionPresentation,offlinePixels,offlineLetters,setupPreview};
   if(typeof module!=='undefined')module.exports=api;
